@@ -22,9 +22,9 @@ Proposition calcul du score
 -Atteindre l'arrivé ful life=1000pts
 -Atteindre l'arrivé en moins d'une minute=1000pts
 -Atteindre l'arrivé en moins d'une minute 30=500pts
--Atteindre l'arrivé avec entre 200 et 249 pts inclus=500pts
--Atteindre l'arrivé avec entre 150 et 199 pts inclus=250pts
--Atteindre l'arrivé avec entre 100 et 149 pts inclus=100pts
--Atteindre l'arrivé avec entre 50 et 99 pts inclus=50pts
--Atteindre l'arrivé avec moins de 50 pts=0pts
+-Atteindre l'arrivé avec entre 200 et 249 pv inclus=500pts
+-Atteindre l'arrivé avec entre 150 et 199 pv inclus=250pts
+-Atteindre l'arrivé avec entre 100 et 149 pv inclus=100pts
+-Atteindre l'arrivé avec entre 50 et 99 pv inclus=50pts
+-Atteindre l'arrivé avec moins de 50 pv=0pts
 
