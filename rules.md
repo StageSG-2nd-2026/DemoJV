@@ -4,6 +4,7 @@ Méthode:d'obtention de point:
 -Vaincre des ennemies (plus de points obtenus si vaincu d'un tire dan la tête)
 -Avoir subit le moins de dégat posible à la fin du timer
 -Vaincre de ennemies le plus rapidement possible
+-Arrivé=lieu au fond du couloir qui lance le calcul du score
 2-Fonctionnalité
 -Progression dans un couloir avec des ennemies qui spawn en suivant différentes configuraions prédéfinit. Arrivé logiquement au bout du couloir.
 -Le tirer en mouvement envoi la balle dans une direction aléatoire.
