@@ -9,3 +9,6 @@ Méthode:d'obtention de point:
 -Le tirer en mouvement envoi la balle dans une direction aléatoire.
 -Le chargeur ne contient que 30 balles
 -Possibilité d'ajouter des ellement de terrain comme des caisses derrière lequel des ennemies pourront se cacher ou monter dessus.
+-Dégat infligé par un balle 40 dégat
+-PV d'un ennemie=150
+-PV du joueur=250
