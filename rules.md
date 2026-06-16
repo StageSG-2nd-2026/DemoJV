@@ -7,6 +7,7 @@ Méthode:d'obtention de point:
 -Arrivé=lieu au fond du couloir qui lance le calcul du score
 2-Fonctionnalité
 -Progression dans un couloir avec des ennemies qui spawn en suivant différentes configuraions prédéfinit. Arrivé logiquement au bout du couloir.
+-Nombre d'ennemie par configuration = environ 4 ennemie
 -Le joueur ne possède qu'une seule arme qu'il doit rechargé toute les 30 balles
 -Le tirer en mouvement envoi la balle dans une direction aléatoire.
 -Le chargeur ne contient que 30 balles
