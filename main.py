@@ -12,14 +12,18 @@ class TacticalFPS(ShowBase):
 
         for wall in self.walls:
 
-            wall_pos = wall.getPos()
-            wall_scale = wall.getScale()
+            bounds = wall.getTightBounds()
 
-            min_x = wall_pos.x - wall_scale.x
-            max_x = wall_pos.x + wall_scale.x
+            if bounds is None:
+                continue
 
-            min_y = wall_pos.y - wall_scale.y
-            max_y = wall_pos.y + wall_scale.y
+            min_point, max_point = bounds
+
+            min_x = min_point.x
+            max_x = max_point.x
+
+            min_y = min_point.y
+            max_y = max_point.y
 
             if (min_x-player_radius <= pos.x <= max_x+player_radius and min_y-player_radius <= pos.y <= max_y+player_radius):
 
@@ -134,6 +138,7 @@ class TacticalFPS(ShowBase):
         enemy.setPos(5, 80, 1)
 
         self.enemy_model = enemy
+
 
         #self.finish = finish
 
@@ -266,7 +271,7 @@ class TacticalFPS(ShowBase):
         total_time = self.score_manager.get_elapsed_time()
         final_score = self.score_manager.calculate_final_score(self.player, total_time)
         rank = self.score_manager.get_rank(final_score)
-        print(f"Game Over! Score: {final_score}, Rank: {rank}")
+        #print(f"Game Over! Score: {final_score}, Rank: {rank}")
         #sys.exit()
 
 if __name__ == "__main__":
