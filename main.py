@@ -32,11 +32,16 @@ class TacticalFPS(ShowBase):
         return False
 
     def __init__(self):
+        self.accept("space", self.jump)
         self.mouse_locked = True
         self.accept("o", self.toggle_mouse)
 
         self.heading = 0
         self.pitch = 0
+        self.vertical_velocity = 0
+        self.gravity = -25
+        self.jump_force = 10
+        self.on_ground = True
 
         ShowBase.__init__(self)
 
@@ -66,7 +71,7 @@ class TacticalFPS(ShowBase):
         self.taskMgr.add(self.update, "update_task")
         self.keys = {}
 
-        for key in ["z", "q", "s", "d","space","b"]:
+        for key in ["z", "q", "s", "d",]:
             self.accept(key, self.set_key, [key, True])
             self.accept(key + "-up", self.set_key, [key, False])
 
@@ -244,12 +249,7 @@ class TacticalFPS(ShowBase):
         if self.keys.get("q", False):
             move -= right
 
-        # Vol vertical temporaire
-        if self.keys.get("space", False):
-            self.camera.setZ(self.camera.getZ() + speed * dt)
-
-        if self.keys.get("b", False):
-            self.camera.setZ(self.camera.getZ() - speed * dt)
+        
 
         if move.length() > 0:
 
@@ -262,7 +262,18 @@ class TacticalFPS(ShowBase):
 
             if not self.collides_with_wall(new_pos):
                 self.camera.setPos(new_pos)
+        self.vertical_velocity += self.gravity * dt
 
+        new_z = self.camera.getZ() + self.vertical_velocity * dt
+
+        ground_height = 1.8
+
+        if new_z <= ground_height:
+            new_z = ground_height
+            self.vertical_velocity = 0
+            self.on_ground = True
+
+        self.camera.setZ(new_z)
         if self.camera.getY() > 95:
             self.end_game()
 
@@ -292,6 +303,10 @@ class TacticalFPS(ShowBase):
             props.setMouseMode(WindowProperties.M_absolute)
 
         self.win.requestProperties(props)
+    def jump(self):
+        if self.on_ground:
+            self.vertical_velocity = self.jump_force
+            self.on_ground = False
 
 if __name__ == "__main__":
     game = TacticalFPS()
