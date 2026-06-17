@@ -424,6 +424,14 @@ class TacticalFPS(ShowBase):
             self.vertical_velocity = 0
             self.on_ground = True
 
+        if self.player_hp<=0:
+            total_time = self.score_manager.get_elapsed_time()
+            final_score = self.score_manager.calculate_final_score(self.player, total_time)
+            rank = self.score_manager.get_rank(final_score)
+            print(f"Game Over! Score: {final_score}, Rank: {rank}")
+            sys.exit()
+
+
         self.camera.setZ(new_z)
 #
         # IA ennemi simple
@@ -484,7 +492,7 @@ class TacticalFPS(ShowBase):
 
 
 #
-        if self.camera.getY() > 95:
+        if self.camera.getY() > 200:
             self.end_game()
 
 
@@ -494,8 +502,8 @@ class TacticalFPS(ShowBase):
         total_time = self.score_manager.get_elapsed_time()
         final_score = self.score_manager.calculate_final_score(self.player, total_time)
         rank = self.score_manager.get_rank(final_score)
-        #print(f"Game Over! Score: {final_score}, Rank: {rank}")
-        #sys.exit()
+        print(f"Game Over! Score: {final_score}, Rank: {rank}")
+        sys.exit()
     def toggle_mouse(self):
         props = WindowProperties()
         self.mouse_locked = not self.mouse_locked
