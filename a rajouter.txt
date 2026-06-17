@@ -1,0 +1,12 @@
+dans setup_lvl
+
+musique = loader.loadMusic("Ambiance.mp3")
+musique.setLoop(True)
+musique.play()
+
+dans handle_shoot
+bang = loader.loadSfx("bang.mp3")
+
+après self.show_message("Bang !", 0.3)
+
+bang.play()
