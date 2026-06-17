@@ -6,11 +6,15 @@ import sys
 
 class TacticalFPS(ShowBase):
     def __init__(self):
+
+        self.heading = 0
+        self.pitch = 0
+
         ShowBase.__init__(self)
 
         # Configuration de la fenêtre
         props = WindowProperties()
-        props.setCursorHidden(True)
+        props.setCursorHidden(False)
         props.setMouseMode(WindowProperties.M_relative)
         self.win.requestProperties(props)
 
@@ -34,7 +38,7 @@ class TacticalFPS(ShowBase):
         self.taskMgr.add(self.update, "update_task")
         self.keys = {}
 
-        for key in ["z", "q", "s", "d","space","b","m","l"]:
+        for key in ["z", "q", "s", "d","space","b"]:
             self.accept(key, self.set_key, [key, True])
             self.accept(key + "-up", self.set_key, [key, False])
 
@@ -44,6 +48,8 @@ class TacticalFPS(ShowBase):
 
     def setup_level(self):
 
+
+        self.walls = []
         self.disableMouse()
 
         self.camera.setPos(5, 40, 1.8)
@@ -58,7 +64,7 @@ class TacticalFPS(ShowBase):
     # Toit
         toit = self.loader.loadModel("models/box")
         toit.reparentTo(render)
-        toit.setScale(10, 100, 0.2)
+        toit.setScale(10, 110, 0.2)
         toit.setPos(0, 40, 4)
 
     # Mur gauche
@@ -66,76 +72,154 @@ class TacticalFPS(ShowBase):
         left_wall.reparentTo(render)
         left_wall.setScale(0.2, 100, 4)
         left_wall.setPos(0, 40,0)
+        self.walls.append(left_wall)
 
     # Mur droit
         right_wall = self.loader.loadModel("models/box")
         right_wall.reparentTo(render)
-        right_wall.setScale(0.2, 100, 4)
+        right_wall.setScale(0.2, 110, 4)
         right_wall.setPos(10, 40, 0)
+        self.walls.append(right_wall)
+
+    # Mur du droit 2
+        r2_wall = self.loader.loadModel("models/box")
+        r2_wall.reparentTo(render)
+        r2_wall.setScale(50, 0.2, 4)
+        r2_wall.setPos(-40, 150, 0)
+        self.walls.append(r2_wall)
+    # Mur de gaucke 2
+        l2_wall = self.loader.loadModel("models/box")
+        l2_wall.reparentTo(render)
+        l2_wall.setScale(40, 0.2, 4)
+        l2_wall.setPos(-40, 140, 0)
+        self.walls.append(l2_wall)
+
+        enemy = self.loader.loadModel("models/box")
+        enemy.reparentTo(render)
+        enemy.setScale(1)
+        enemy.setPos(5, 80, 1)
+
+        self.enemy_model = enemy
 
         #self.finish = finish
 
     def setup_ui(self):
-        # Utilisation de OnscreenText pour le HUD
-        pass
+        from direct.gui.OnscreenText import OnscreenText
+
+        self.crosshair = OnscreenText(
+        text="+",
+        pos=(0, 0),
+        scale=0.3)
 
     def handle_shoot(self):
-        is_moving = self.player.velocity.length() > 0.1
-        shot_fired, spread = self.player.weapon.shoot(is_moving, 1.0)
 
-        if shot_fired:
-            # Logique de détection de collision (Headshot vs Body)
-            # Si touché : self.player.add_score(enemy.take_damage(40, is_headshot))
-            pass
+        if self.player.weapon.magazine <= 0:
+            print("Recharge !")
+            return
+
+        self.player.weapon.magazine -= 1
+
+        print("Bang !")
+        from panda3d.core import LineSegs
+
+        line = LineSegs()
+        line.moveTo(self.camera.getPos())
+        forward = self.camera.getQuat().getForward()
+
+        line.drawTo(
+            self.camera.getPos() + forward * 100
+        )
+
+        beam = render.attachNewNode(line.create())
+
+        # destruction après 0.05 seconde
+        self.taskMgr.doMethodLater(
+            0.05,
+            lambda task: (beam.removeNode(), task.done)[1],
+            "remove_beam"
+        )
+
+        if abs(self.camera.getX() - 5) < 1:
+            self.player.score += 100
+            print("Touché !")
 
     def update(self, task):
-        print("Camera:", self.camera.getPos())
+        #print("Camera:", self.camera.getPos())
+        if self.mouseWatcherNode.hasMouse():
+
+            mouse = self.win.getPointer(0)
+
+            x = mouse.getX()
+            y = mouse.getY()
+
+            center_x = self.win.getXSize() // 2
+            center_y = self.win.getYSize() // 2
+
+            dx = x - center_x
+            dy = y - center_y
+
+            sensitivity = 0.15
+
+            self.heading -= dx * sensitivity
+            self.pitch -= dy * sensitivity
+
+            self.pitch = max(-85, min(85, self.pitch))
+
+            self.camera.setH(self.heading)
+            self.camera.setP(self.pitch)
+
+            self.win.movePointer(
+            0,
+            center_x,
+            center_y
+            )
+
 
         dt = globalClock.getDt()
 
-        speed = 50
+        speed = 20
 
-        move_x = 0
-        move_y = 0
-        move_z = 0
-        orientationx = 0
+        forward = self.camera.getQuat().getForward()
+        right = self.camera.getQuat().getRight()
+
+        move = forward * 0
+
+        # On garde les déplacements au sol
+        forward.setZ(0)
+        right.setZ(0)
+
+        forward.normalize()
+        right.normalize()
 
         if self.keys.get("z", False):
-            move_y += speed * dt
+            move += forward
 
         if self.keys.get("s", False):
-            move_y -= speed * dt
-
-        if self.keys.get("q", False):
-            move_x -= speed * dt
+            move -= forward
 
         if self.keys.get("d", False):
-            move_x += speed * dt
+            move += right
 
+        if self.keys.get("q", False):
+            move -= right
+
+        # Vol vertical temporaire
         if self.keys.get("space", False):
-            move_z+= speed * dt
+            self.camera.setZ(self.camera.getZ() + speed * dt)
 
         if self.keys.get("b", False):
-            move_z-= speed * dt
+            self.camera.setZ(self.camera.getZ() - speed * dt)
 
-        if self.keys.get("m",False):
-            orientationx += dt*90
-
-        if self.keys.get("l",False):
-            orientationx -= dt*90
-
-        self.camera.setX(self.camera.getX() + move_x)
-        self.camera.setY(self.camera.getY() + move_y)
-        self.camera.setZ(self.camera.getZ() + move_z)
+        if move.length() > 0:
+            move.normalize()
+            self.camera.setPos(
+                self.camera.getPos() +
+                move * speed * dt
+            )
 
         if self.camera.getY() > 95:
             self.end_game()
 
-        self.camera.lookAt(
-            self.camera.getX()+orientationx,
-            self.camera.getY() + 10,
-            self.camera.getZ()
-        )
 
         return task.cont
 
@@ -144,8 +228,9 @@ class TacticalFPS(ShowBase):
         final_score = self.score_manager.calculate_final_score(self.player, total_time)
         rank = self.score_manager.get_rank(final_score)
         print(f"Game Over! Score: {final_score}, Rank: {rank}")
-        sys.exit()
+        #sys.exit()
 
 if __name__ == "__main__":
     game = TacticalFPS()
     game.run()
+
