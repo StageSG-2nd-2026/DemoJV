@@ -5,6 +5,28 @@ from managers import ScoreManager, EnemySpawner
 import sys
 
 class TacticalFPS(ShowBase):
+
+    def collides_with_wall(self, pos):
+
+        player_radius = 0.5
+
+        for wall in self.walls:
+
+            wall_pos = wall.getPos()
+            wall_scale = wall.getScale()
+
+            min_x = wall_pos.x - wall_scale.x
+            max_x = wall_pos.x + wall_scale.x
+
+            min_y = wall_pos.y - wall_scale.y
+            max_y = wall_pos.y + wall_scale.y
+
+            if (min_x-player_radius <= pos.x <= max_x+player_radius and min_y-player_radius <= pos.y <= max_y+player_radius):
+
+                return True
+
+        return False
+
     def __init__(self):
 
         self.heading = 0
@@ -90,9 +112,21 @@ class TacticalFPS(ShowBase):
     # Mur de gaucke 2
         l2_wall = self.loader.loadModel("models/box")
         l2_wall.reparentTo(render)
-        l2_wall.setScale(40, 0.2, 4)
-        l2_wall.setPos(-40, 140, 0)
+        l2_wall.setScale(50, 0.2, 4)
+        l2_wall.setPos(-50, 140, 0)
         self.walls.append(l2_wall)
+    # Mur de gauche 3
+        l3_wall = self.loader.loadModel("models/box")
+        l3_wall.reparentTo(render)
+        l3_wall.setScale(0.2, 50, 4)
+        l3_wall.setPos(-50, 140, 0)
+        self.walls.append(l3_wall)
+    # Mur de droite 3
+        r3_wall = self.loader.loadModel("models/box")
+        r3_wall.reparentTo(render)
+        r3_wall.setScale(0.2, 40, 4)
+        r3_wall.setPos(-40, 150, 0)
+        self.walls.append(r3_wall)
 
         enemy = self.loader.loadModel("models/box")
         enemy.reparentTo(render)
@@ -211,11 +245,16 @@ class TacticalFPS(ShowBase):
             self.camera.setZ(self.camera.getZ() - speed * dt)
 
         if move.length() > 0:
+
             move.normalize()
-            self.camera.setPos(
+
+            new_pos = (
                 self.camera.getPos() +
                 move * speed * dt
             )
+
+            if not self.collides_with_wall(new_pos):
+                self.camera.setPos(new_pos)
 
         if self.camera.getY() > 95:
             self.end_game()
@@ -233,4 +272,3 @@ class TacticalFPS(ShowBase):
 if __name__ == "__main__":
     game = TacticalFPS()
     game.run()
-
