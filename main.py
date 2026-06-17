@@ -201,13 +201,26 @@ class TacticalFPS(ShowBase):
         floor3.setTexture(texsol, 1)
 
 
-        enemy = self.loader.loadModel("models/box")
-        enemy.reparentTo(render)
-        enemy.setScale(1)
-        enemy.setPos(5, 80, 1)
-        self.enemy_hp = 150
+        # Ennemi parent
+        self.enemy_model = render.attachNewNode("enemy")
+        self.enemy_model.setPos(5, 80, 1)
 
-        self.enemy_model = enemy
+# Corps
+        self.enemy_body = self.loader.loadModel("models/box")
+        self.enemy_body.reparentTo(self.enemy_model)
+        self.enemy_body.setScale(1, 1, 1.5)
+        self.enemy_body.setPos(0, 0, 0)
+
+# Tête
+        self.enemy_head = self.loader.loadModel("models/box")
+        self.enemy_head.reparentTo(self.enemy_model)
+        self.enemy_head.setScale(0.6)
+        self.enemy_head.setPos(0, 0, 1.8)
+
+        self.enemy_body.setColor(1, 0, 0, 1)
+        self.enemy_head.setColor(1, 0.8, 0.8, 1)
+
+        self.enemy_hp = 150
 
 
         #self.finish = finish
@@ -277,32 +290,44 @@ class TacticalFPS(ShowBase):
         if self.enemy_model is None:
             return
         else:
-
             enemy_pos = self.enemy_model.getPos()
 
             origin = self.camera.getPos()
             forward = self.camera.getQuat().getForward()
 
-            to_enemy = enemy_pos - origin
-            distance = to_enemy.length()
+# Centre du corps
+            body_pos = enemy_pos
 
-            if distance > 0:
-                to_enemy.normalize()
+# Centre de la tête
+            head_pos = enemy_pos + (0, 0, 1.8)
 
-                # Produit scalaire
-                dot = forward.dot(to_enemy)
+            body_dir = body_pos - origin
+            head_dir = head_pos - origin
 
-                # 0.99 ≈ très proche du centre du viseur
-                if dot > 0.99:
+            body_dir.normalize()
+            head_dir.normalize()
 
-                    self.enemy_hp -= 40
+            body_dot = forward.dot(body_dir)
+            head_dot = forward.dot(head_dir)
+            if head_dot > 0.999:
 
-                    self.show_message(
-                        f"Touché ! ({self.enemy_hp} PV)",
-                        0.8
-                    )
+                self.enemy_hp -= 100
 
-                    if self.enemy_hp <= 0:
+                self.show_message(
+                    f"HEADSHOT ! ({self.enemy_hp} PV)",
+                    1
+                )
+
+            elif body_dot > 0.99:
+
+                self.enemy_hp -= 40
+
+                self.show_message(
+                    f"Touché ! ({self.enemy_hp} PV)",
+                    0.8
+                )
+
+            if self.enemy_hp <= 0:
 
                         self.show_message("ENNEMI TUÉ +100", 1.5)
 
