@@ -97,6 +97,9 @@ class TacticalFPS(ShowBase):
         self.keys[key] = value
 
     def setup_level(self):
+        musique = loader.loadMusic("Ambiance.mp3")
+        musique.setLoop(True)
+        musique.play()
 
         from panda3d.core import AmbientLight
         from panda3d.core import DirectionalLight
@@ -241,7 +244,7 @@ class TacticalFPS(ShowBase):
         )
 
     def handle_shoot(self):
-
+        bang = loader.loadSfx("bang.mp3")
         if self.player.weapon.magazine <= 0:
             self.show_message("Recharge !", 1)
             return
@@ -249,6 +252,7 @@ class TacticalFPS(ShowBase):
         self.player.weapon.magazine -= 1
 
         self.show_message("Bang !", 0.3)
+        bang.play()
         from panda3d.core import LineSegs
 
         line = LineSegs()
