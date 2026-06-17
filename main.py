@@ -143,6 +143,7 @@ class TacticalFPS(ShowBase):
         enemy.reparentTo(render)
         enemy.setScale(1)
         enemy.setPos(5, 80, 1)
+        self.enemy_hp = 150
 
         self.enemy_model = enemy
 
@@ -178,6 +179,40 @@ class TacticalFPS(ShowBase):
 
         beam = render.attachNewNode(line.create())
 
+        # Détection de touche
+        if self.enemy_model is None:
+            return
+        else:
+
+            enemy_pos = self.enemy_model.getPos()
+
+            origin = self.camera.getPos()
+            forward = self.camera.getQuat().getForward()
+
+            to_enemy = enemy_pos - origin
+            distance = to_enemy.length()
+
+            if distance > 0:
+                to_enemy.normalize()
+
+                # Produit scalaire
+                dot = forward.dot(to_enemy)
+
+                # 0.99 ≈ très proche du centre du viseur
+                if dot > 0.99:
+
+                    self.enemy_hp -= 40
+
+                    print("Touché ! PV restants :", self.enemy_hp)
+
+                    if self.enemy_hp <= 0:
+
+                        print("ENNEMI TUÉ")
+
+                        self.player.score += 100
+
+                        self.enemy_model.removeNode()
+                        self.enemy_model = None
         # destruction après 0.05 seconde
         self.taskMgr.doMethodLater(
             0.05,
@@ -185,9 +220,6 @@ class TacticalFPS(ShowBase):
             "remove_beam"
         )
 
-        if abs(self.camera.getX() - 5) < 1:
-            self.player.score += 100
-            print("Touché !")
 
     def update(self, task):
         #print("Camera:", self.camera.getPos())
@@ -239,7 +271,7 @@ class TacticalFPS(ShowBase):
 
         if self.keys.get("z", False):
             move += forward
- 
+
         if self.keys.get("s", False):
             move -= forward
 
@@ -259,6 +291,31 @@ class TacticalFPS(ShowBase):
                 self.camera.getPos() +
                 move * speed * dt
             )
+
+            if move.length() > 0:
+
+                move.normalize()
+
+                current_pos = self.camera.getPos()
+
+                move_x = move * speed * dt
+                move_y = move * speed * dt
+
+                # Déplacement horizontal seul
+                test_x = current_pos + move_x
+                test_x.setY(current_pos.getY())
+
+                if not self.collides_with_wall(test_x):
+                    current_pos.setX(test_x.getX())
+
+                # Déplacement vertical seul
+                test_y = current_pos + move_y
+                test_y.setX(current_pos.getX())
+
+                if not self.collides_with_wall(test_y):
+                    current_pos.setY(test_y.getY())
+
+                self.camera.setPos(current_pos)
 
             if not self.collides_with_wall(new_pos):
                 self.camera.setPos(new_pos)
