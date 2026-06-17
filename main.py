@@ -57,6 +57,8 @@ class TacticalFPS(ShowBase):
         self.gravity = -25
         self.jump_force = 10
         self.on_ground = True
+        self.player_hp = 100
+        self.enemy_shot_timer = 0
 
         ShowBase.__init__(self)
 
@@ -231,6 +233,12 @@ class TacticalFPS(ShowBase):
             scale=0.2,
             mayChange=True
         )
+        self.hp_text = OnscreenText(
+        text="100 HP",
+        pos=(-1.2, -0.9),
+        scale=0.08,
+        mayChange=True
+        )
 
     def handle_shoot(self):
 
@@ -305,6 +313,9 @@ class TacticalFPS(ShowBase):
 
         self.ammo_text.setText(
             f"{self.player.weapon.magazine}/30"
+        )
+        self.hp_text.setText(
+            f"{self.player_hp} HP"
         )
         #print("Camera:", self.camera.getPos())
         if self.mouse_locked and self.mouseWatcherNode.hasMouse():
@@ -415,6 +426,60 @@ class TacticalFPS(ShowBase):
             self.on_ground = True
 
         self.camera.setZ(new_z)
+        # IA ennemi simple
+        if self.enemy_model:
+
+            enemy_pos = self.enemy_model.getPos()
+            player_pos = self.camera.getPos()
+
+            direction = player_pos - enemy_pos
+            direction.setZ(0)
+
+            if direction.length() > 0:
+
+                direction.normalize()
+
+                self.enemy_model.setPos(
+                    enemy_pos + direction * 2 * dt
+                )
+
+                self.enemy_model.lookAt(self.camera)
+        if self.enemy_model:
+
+            self.enemy_shot_timer -= dt
+
+            distance = (
+            self.enemy_model.getPos()
+            - self.camera.getPos()
+            ).length()
+
+            if distance < 20:
+
+                if self.enemy_shot_timer <= 0:
+                    from panda3d.core import LineSegs
+
+                    line = LineSegs()
+                    line.setColor(1, 0, 0)
+                    line.setThickness(2)
+                    line.moveTo(self.enemy_model.getPos())
+                    line.drawTo(self.camera.getPos())
+
+                    beam = render.attachNewNode(line.create())
+
+                    self.taskMgr.doMethodLater(
+                         0.05,
+                        lambda task, b=beam: (b.removeNode(), task.done)[1],
+                        f"enemy_beam_{id(beam)}"
+                    )
+
+                    self.player_hp -= 10
+
+                    self.show_message(
+                        f"-10 HP ({self.player_hp})",
+                        0.5
+                    )
+
+                    self.enemy_shot_timer = 1
         if self.camera.getY() > 95:
             self.end_game()
 
