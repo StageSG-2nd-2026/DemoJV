@@ -343,7 +343,7 @@ class TacticalFPS(ShowBase):
         )
         #print("Camera:", self.camera.getPos())
         if self.mouse_locked and self.mouseWatcherNode.hasMouse():
- 
+
             mouse = self.win.getPointer(0)
 
             x = mouse.getX()
@@ -498,6 +498,8 @@ class TacticalFPS(ShowBase):
                     line.drawTo(self.camera.getPos())
 
                     beam = render.attachNewNode(line.create())
+                    bang = loader.loadSfx("tire.mp3")
+                    bang.play()
 
                     self.taskMgr.doMethodLater(
                          0.05,
