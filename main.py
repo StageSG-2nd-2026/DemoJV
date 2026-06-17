@@ -57,7 +57,7 @@ class TacticalFPS(ShowBase):
         self.gravity = -25
         self.jump_force = 10
         self.on_ground = True
-        self.player_hp = 100
+        self.player_hp =100
         self.enemy_shot_timer = 0
 
         ShowBase.__init__(self)
@@ -97,12 +97,13 @@ class TacticalFPS(ShowBase):
         self.keys[key] = value
 
     def setup_level(self):
-        musique = loader.loadMusic("Ambiance.mp3")
-        musique.setLoop(True)
-        musique.play()
 
         from panda3d.core import AmbientLight
         from panda3d.core import DirectionalLight
+
+        musique = loader.loadMusic("Ambiance.mp3")
+        musique.setLoop(True)
+        musique.play()
 
         ambient = AmbientLight("ambient")
         ambient.setColor((0.4, 0.4, 0.4, 1))
@@ -249,15 +250,11 @@ class TacticalFPS(ShowBase):
             scale=0.2,
             mayChange=True
         )
-        self.hp_text = OnscreenText(
-        text="100 HP",
-        pos=(-1.2, -0.9),
-        scale=0.08,
-        mayChange=True
-        )
 
     def handle_shoot(self):
+
         bang = loader.loadSfx("bang.mp3")
+
         if self.player.weapon.magazine <= 0:
             self.show_message("Recharge !", 1)
             return
@@ -266,6 +263,7 @@ class TacticalFPS(ShowBase):
 
         self.show_message("Bang !", 0.3)
         bang.play()
+
         from panda3d.core import LineSegs
 
         line = LineSegs()
@@ -342,9 +340,6 @@ class TacticalFPS(ShowBase):
 
         self.ammo_text.setText(
             f"{self.player.weapon.magazine}/30"
-        )
-        self.hp_text.setText(
-            f"{self.player_hp} HP"
         )
         #print("Camera:", self.camera.getPos())
         if self.mouse_locked and self.mouseWatcherNode.hasMouse():
@@ -454,7 +449,16 @@ class TacticalFPS(ShowBase):
             self.vertical_velocity = 0
             self.on_ground = True
 
+        if self.player_hp<=0:
+            total_time = self.score_manager.get_elapsed_time()
+            final_score = self.score_manager.calculate_final_score(self.player, total_time)
+            rank = self.score_manager.get_rank(final_score)
+            print(f"Game Over! Score: {final_score}, Rank: {rank}")
+            sys.exit()
+
+
         self.camera.setZ(new_z)
+#
         # IA ennemi simple
         if self.enemy_model:
 
@@ -509,7 +513,11 @@ class TacticalFPS(ShowBase):
                     )
 
                     self.enemy_shot_timer = 1
-        if self.camera.getY() > 95:
+
+
+
+#
+        if self.camera.getY() > 200:
             self.end_game()
 
 
@@ -519,8 +527,8 @@ class TacticalFPS(ShowBase):
         total_time = self.score_manager.get_elapsed_time()
         final_score = self.score_manager.calculate_final_score(self.player, total_time)
         rank = self.score_manager.get_rank(final_score)
-        #print(f"Game Over! Score: {final_score}, Rank: {rank}")
-        #sys.exit()
+        print(f"Game Over! Score: {final_score}, Rank: {rank}")
+        sys.exit()
     def toggle_mouse(self):
         props = WindowProperties()
         self.mouse_locked = not self.mouse_locked
