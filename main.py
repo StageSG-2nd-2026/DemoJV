@@ -4,7 +4,22 @@ from entities import Player, Enemy
 from managers import ScoreManager, EnemySpawner
 import sys
 
+
 class TacticalFPS(ShowBase):
+
+    def show_message(self, message, duration=1.0):
+
+        self.message_text.setText(message)
+
+        def clear(task):
+            self.message_text.setText("")
+            return task.done
+
+        self.taskMgr.doMethodLater(
+            duration,
+            clear,
+            f"clear_message_{id(self)}"
+        )
 
     def collides_with_wall(self, pos):
 
@@ -81,6 +96,23 @@ class TacticalFPS(ShowBase):
 
     def setup_level(self):
 
+        from panda3d.core import AmbientLight
+        from panda3d.core import DirectionalLight
+
+        ambient = AmbientLight("ambient")
+        ambient.setColor((0.4, 0.4, 0.4, 1))
+
+        ambient_np = render.attachNewNode(ambient)
+        render.setLight(ambient_np)
+
+        sun = DirectionalLight("sun")
+        sun.setColor((0.8, 0.8, 0.8, 1))
+
+        sun_np = render.attachNewNode(sun)
+        sun_np.setHpr(45, -45, 0)
+
+        render.setLight(sun_np)
+
 
         self.walls = []
         self.disableMouse()
@@ -89,16 +121,25 @@ class TacticalFPS(ShowBase):
         self.camera.lookAt(0,0,0)
 
     # Sol
-        floor = self.loader.loadModel("models/environment")
+        floor = self.loader.loadModel("models/box")
         floor.reparentTo(render)
-        floor.setScale(10, 100, 0.2)
+        floor.setScale(10, 110, 0.2)
         floor.setPos(0, 40, 0)
+        floor2 = self.loader.loadModel("models/box")
+        floor2.reparentTo(render)
+        floor2.setScale(50, 10, 0.2)
+        floor2.setPos(-50, 140, 0)
+        floor3 = self.loader.loadModel("models/box")
+        floor3.reparentTo(render)
+        floor3.setScale(10, 40, 0.2)
+        floor3.setPos(-50, 150, 0)
+
 
     # Toit
-        toit = self.loader.loadModel("models/box")
-        toit.reparentTo(render)
-        toit.setScale(10, 110, 0.2)
-        toit.setPos(0, 40, 4)
+    #    toit = self.loader.loadModel("models/box")
+     #   toit.reparentTo(render)
+      #  toit.setScale(1000, 1000, 0.2)
+       # toit.setPos(-500, -500, 4)
 
     # Mur gauche
         left_wall = self.loader.loadModel("models/box")
@@ -139,6 +180,22 @@ class TacticalFPS(ShowBase):
         r3_wall.setPos(-40, 150, 0)
         self.walls.append(r3_wall)
 
+        tex = self.loader.loadTexture("texture_mur.png")
+
+        left_wall.setTexture(tex, 1)
+        right_wall.setTexture(tex, 1)
+        r2_wall.setTexture(tex, 1)
+        l2_wall.setTexture(tex, 1)
+        l3_wall.setTexture(tex, 1)
+        r3_wall.setTexture(tex, 1)
+
+        texsol = self.loader.loadTexture("texture_sol.png")
+
+        floor.setTexture(texsol, 1)
+        floor2.setTexture(texsol, 1)
+        floor3.setTexture(texsol, 1)
+
+
         enemy = self.loader.loadModel("models/box")
         enemy.reparentTo(render)
         enemy.setScale(1)
@@ -154,19 +211,36 @@ class TacticalFPS(ShowBase):
         from direct.gui.OnscreenText import OnscreenText
 
         self.crosshair = OnscreenText(
-        text="+",
-        pos=(0, 0),
-        scale=0.3)
+            text="+",
+            pos=(0, 0),
+            scale=0.3
+        )
+
+        self.message_text = OnscreenText(
+            text="",
+            pos=(-0.7, 0.9),      # haut droite
+            align=1,             # texte aligné à droite
+            scale=0.05,
+            mayChange=True
+        )
+
+        self.ammo_text = OnscreenText(
+            text="30/30",
+            pos=(1.3, -0.9),
+            align=1,
+            scale=0.2,
+            mayChange=True
+        )
 
     def handle_shoot(self):
 
         if self.player.weapon.magazine <= 0:
-            print("Recharge !")
+            self.show_message("Recharge !", 1)
             return
 
         self.player.weapon.magazine -= 1
 
-        print("Bang !")
+        self.show_message("Bang !", 0.3)
         from panda3d.core import LineSegs
 
         line = LineSegs()
@@ -178,6 +252,14 @@ class TacticalFPS(ShowBase):
         )
 
         beam = render.attachNewNode(line.create())
+
+        beam_name = f"beam_{id(beam)}"
+
+        self.taskMgr.doMethodLater(
+            0.05,
+            lambda task, b=beam: (b.removeNode(), task.done)[1],
+            beam_name
+        )
 
         # Détection de touche
         if self.enemy_model is None:
@@ -203,25 +285,27 @@ class TacticalFPS(ShowBase):
 
                     self.enemy_hp -= 40
 
-                    print("Touché ! PV restants :", self.enemy_hp)
+                    self.show_message(
+                        f"Touché ! ({self.enemy_hp} PV)",
+                        0.8
+                    )
 
                     if self.enemy_hp <= 0:
 
-                        print("ENNEMI TUÉ")
+                        self.show_message("ENNEMI TUÉ +100", 1.5)
 
                         self.player.score += 100
 
                         self.enemy_model.removeNode()
                         self.enemy_model = None
-        # destruction après 0.05 seconde
-        self.taskMgr.doMethodLater(
-            0.05,
-            lambda task: (beam.removeNode(), task.done)[1],
-            "remove_beam"
-        )
+
 
 
     def update(self, task):
+
+        self.ammo_text.setText(
+            f"{self.player.weapon.magazine}/30"
+        )
         #print("Camera:", self.camera.getPos())
         if self.mouse_locked and self.mouseWatcherNode.hasMouse():
 
@@ -281,7 +365,7 @@ class TacticalFPS(ShowBase):
         if self.keys.get("q", False):
             move -= right
 
-        
+
 
         if move.length() > 0:
 
