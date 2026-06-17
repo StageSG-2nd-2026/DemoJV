@@ -32,6 +32,8 @@ class TacticalFPS(ShowBase):
         return False
 
     def __init__(self):
+        self.mouse_locked = True
+        self.accept("o", self.toggle_mouse)
 
         self.heading = 0
         self.pitch = 0
@@ -184,7 +186,7 @@ class TacticalFPS(ShowBase):
 
     def update(self, task):
         #print("Camera:", self.camera.getPos())
-        if self.mouseWatcherNode.hasMouse():
+        if self.mouse_locked and self.mouseWatcherNode.hasMouse():
 
             mouse = self.win.getPointer(0)
 
@@ -232,7 +234,7 @@ class TacticalFPS(ShowBase):
 
         if self.keys.get("z", False):
             move += forward
-
+ 
         if self.keys.get("s", False):
             move -= forward
 
@@ -273,6 +275,23 @@ class TacticalFPS(ShowBase):
         rank = self.score_manager.get_rank(final_score)
         #print(f"Game Over! Score: {final_score}, Rank: {rank}")
         #sys.exit()
+    def toggle_mouse(self):
+        props = WindowProperties()
+        self.mouse_locked = not self.mouse_locked
+
+        if self.mouse_locked:
+            props.setCursorHidden(True)
+            props.setMouseMode(WindowProperties.M_relative)
+
+            center_x = self.win.getXSize() // 2
+            center_y = self.win.getYSize() // 2
+            self.win.movePointer(0, center_x, center_y)
+
+        else:
+            props.setCursorHidden(False)
+            props.setMouseMode(WindowProperties.M_absolute)
+
+        self.win.requestProperties(props)
 
 if __name__ == "__main__":
     game = TacticalFPS()
