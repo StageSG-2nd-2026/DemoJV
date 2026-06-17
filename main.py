@@ -288,12 +288,13 @@ class TacticalFPS(ShowBase):
         if self.enemy_model is None:
             return
         else:
+
             enemy_pos = self.enemy_model.getPos()
 
             origin = self.camera.getPos()
             forward = self.camera.getQuat().getForward()
 
-# Centre du corps
+            # Centre du corps
             body_pos = enemy_pos
 
 # Centre de la tête
@@ -333,7 +334,6 @@ class TacticalFPS(ShowBase):
 
                         self.enemy_model.removeNode()
                         self.enemy_model = None
-
 
 
     def update(self, task):
