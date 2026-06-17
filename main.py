@@ -343,7 +343,7 @@ class TacticalFPS(ShowBase):
         )
         #print("Camera:", self.camera.getPos())
         if self.mouse_locked and self.mouseWatcherNode.hasMouse():
-
+ 
             mouse = self.win.getPointer(0)
 
             x = mouse.getX()
