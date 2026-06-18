@@ -337,6 +337,16 @@ class TacticalFPS(ShowBase):
             mayChange=True
         )
 
+        from direct.gui.DirectGui import DirectWaitBar
+
+        self.hp_bar = DirectWaitBar(
+            text="Vie",
+            value=100,
+            range=100,
+            pos=(-1.15, 0, -0.9),   # bas gauche
+            scale=(0.4, 1, 0.05)
+        )
+
     def handle_shoot(self):
         bang = loader.loadSfx("bang.mp3")
 
@@ -429,7 +439,17 @@ class TacticalFPS(ShowBase):
         self.ammo_text.setText(
             f"{self.player.weapon.magazine}/30"
         )
-        print("Camera:", self.camera.getPos())
+
+        self.hp_bar["value"] = self.player_hp
+        self.hp_bar["text"] = f"{self.player_hp} HP"
+        if self.player_hp > 60:
+            self.hp_bar["barColor"] = (0, 1, 0, 1)      # vert
+
+        elif self.player_hp > 30:
+            self.hp_bar["barColor"] = (1, 0.6, 0, 1)    # orange
+
+        else:
+            self.hp_bar["barColor"] = (1, 0, 0, 1)      # rouge
         if self.mouse_locked and self.mouseWatcherNode.hasMouse():
 
             mouse = self.win.getPointer(0)
