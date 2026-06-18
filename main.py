@@ -142,10 +142,18 @@ class TacticalFPS(ShowBase):
 
 
     # Toit
-    #    toit = self.loader.loadModel("models/box")
-     #   toit.reparentTo(render)
-      #  toit.setScale(1000, 1000, 0.2)
-       # toit.setPos(-500, -500, 4)
+        toit = self.loader.loadModel("models/box")
+        toit.reparentTo(render)
+        toit.setScale(10, 110, 0.2)
+        toit.setPos(0, 40, 4)
+        toit2 = self.loader.loadModel("models/box")
+        toit2.reparentTo(render)
+        toit2.setScale(50, 10, 0.2)
+        toit2.setPos(-50, 140, 4)
+        toit3 = self.loader.loadModel("models/box")
+        toit3.reparentTo(render)
+        toit3.setScale(10, 40, 0.2)
+        toit3.setPos(-50, 150, 4)
 
     # Mur gauche
         left_wall = self.loader.loadModel("models/box")
@@ -200,6 +208,13 @@ class TacticalFPS(ShowBase):
         floor.setTexture(texsol, 1)
         floor2.setTexture(texsol, 1)
         floor3.setTexture(texsol, 1)
+
+        textoit = self.loader.loadTexture("texture_toit.png")
+        textoit2 = self.loader.loadTexture("texture_toit2.png")
+
+        toit.setTexture(textoit,1)
+        toit2.setTexture(textoit2,1)
+        toit3.setTexture(textoit,1)
 
 
         # Ennemi parent
