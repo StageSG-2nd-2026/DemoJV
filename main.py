@@ -283,7 +283,6 @@ class TacticalFPS(ShowBase):
             (2, 120, 1),
             (8, 140, 1)
         ]
-
         for pos in positions:
 
             enemy = render.attachNewNode("enemy")
@@ -344,7 +343,7 @@ class TacticalFPS(ShowBase):
             value=100,
             range=100,
             pos=(-1.15, 0, -0.9),   # bas gauche
-            scale=(0.4, 1, 0.05)
+            scale=(0.4, 1, 0.5)
         )
 
     def handle_shoot(self):
@@ -594,24 +593,31 @@ class TacticalFPS(ShowBase):
             direction = player_pos - enemy_pos
             direction.setZ(0)
 
-            if direction.length() > 0:
+            distance = direction.length()
 
-                direction.normalize()
+# L'ennemi ne s'active qu'à moins de 60 mètres
+            if distance < 60:
 
-                strafe = direction.cross((0, 0, 1))
-                strafe.normalize()
+    # Il s'arrête à 10 mètres du joueur
+                if distance > 10:
 
-                move = (
-                    direction * 10 +
-                    strafe * random.uniform(-4, 4)
-                )
+                    direction.normalize()
 
-                move.normalize()
+                    strafe = direction.cross((0, 0, 1))
+                    strafe.normalize()
 
-                node.setPos(
-                    enemy_pos +
-                    move * 12 * dt
-                )
+                    move = (
+                        direction * 10 +
+                        strafe * random.uniform(-4, 4)
+                    )
+
+                    move.normalize()
+
+                    new_pos = enemy_pos + move * 12 * dt
+
+                    # Collision avec les murs
+                    if not self.collides_with_wall(new_pos):
+                        node.setPos(new_pos)
 
                 node.lookAt(self.camera)
             enemy["jump_timer"] -= dt
@@ -619,7 +625,7 @@ class TacticalFPS(ShowBase):
             if enemy["jump_timer"] <= 0:
 
                 enemy["velocity_z"] = 8
-                enemy["jump_timer"] = random.uniform(0.4, 1.0)
+                enemy["jump_timer"] = random.uniform(1, 1.5)
 
             enemy["velocity_z"] -= 25 * dt
 
