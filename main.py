@@ -495,11 +495,18 @@ class TacticalFPS(ShowBase):
             self.on_ground = True
 
         if self.player_hp<=0:
+            from direct.gui.OnscreenText import OnscreenText
+            from panda3d.core import TextNode
             total_time = self.score_manager.get_elapsed_time()
             final_score = self.score_manager.calculate_final_score(self.player, total_time)
             rank = self.score_manager.get_rank(final_score)
             print(f"Game Over! Score: {final_score}, Rank: {rank}")
-            sys.exit()
+            OnscreenText(text="GAME OVER",pos=(0,0),scale=0.2,fg=(1,0,0,1),align=TextNode.ACenter)
+            self.taskMgr.doMethodLater(
+            3.0,           # attendre 3 secondes
+            self.quit_game,
+            "quit_game"
+            )
 
 
         self.camera.setZ(new_z)
@@ -648,6 +655,8 @@ class TacticalFPS(ShowBase):
 
     def stop_shooting(self):
         self.shooting = False
+    def quit_game(self, task):
+        sys.exit()
 
 if __name__ == "__main__":
     game = TacticalFPS()
