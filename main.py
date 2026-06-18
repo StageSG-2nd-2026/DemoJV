@@ -130,8 +130,8 @@ class TacticalFPS(ShowBase):
         self.walls = []
         self.disableMouse()
 
-        self.camera.setPos(5, 40, 1.8)
-        self.camera.lookAt(0,0,0)
+        self.camera.setPos(5, 21, 1.8)
+        self.camera.lookAt(5,0,1.8)
 
     # Sol
         floor = self.loader.loadModel("models/box")
@@ -146,6 +146,10 @@ class TacticalFPS(ShowBase):
         floor3.reparentTo(render)
         floor3.setScale(10, 40, 0.2)
         floor3.setPos(-50, 150, 0)
+        floor4 = self.loader.loadModel("models/box")
+        floor4.reparentTo(render)
+        floor4.setScale(30, 20, 0.2)
+        floor4.setPos(-10, 20, 0)
 
 
     # Toit
@@ -161,6 +165,10 @@ class TacticalFPS(ShowBase):
         toit3.reparentTo(render)
         toit3.setScale(10, 40, 0.2)
         toit3.setPos(-50, 150, 4)
+        toit4 = self.loader.loadModel("models/box")
+        toit4.reparentTo(render)
+        toit4.setScale(30, 20, 0.2)
+        toit4.setPos(-10, 20, 8)
 
     # Mur gauche
         left_wall = self.loader.loadModel("models/box")
@@ -200,6 +208,39 @@ class TacticalFPS(ShowBase):
         r3_wall.setScale(0.2, 40, 4)
         r3_wall.setPos(-40, 150, 0)
         self.walls.append(r3_wall)
+    # Mur de gauche debut
+        r4_wall = self.loader.loadModel("models/box")
+        r4_wall.reparentTo(render)
+        r4_wall.setScale(0.2,20,8)
+        r4_wall.setPos(-10,20,0)
+        self.walls.append(r4_wall)
+    # Mur de droite debut
+        l4_wall = self.loader.loadModel("models/box")
+        l4_wall.reparentTo(render)
+        l4_wall.setScale(0.2,20,8)
+        l4_wall.setPos(20,20,0)
+        self.walls.append(l4_wall)
+    # Mur de fond
+        f_wall = self.loader.loadModel("models/box")
+        f_wall.reparentTo(render)
+        f_wall.setScale(30,0.2,8)
+        f_wall.setPos(-10,20,0)
+        self.walls.append(f_wall)
+        f1_wall = self.loader.loadModel("models/box")
+        f1_wall.reparentTo(render)
+        f1_wall.setScale(10,0.2,8)
+        f1_wall.setPos(-10,40,0)
+        self.walls.append(f1_wall)
+        f2_wall = self.loader.loadModel("models/box")
+        f2_wall.reparentTo(render)
+        f2_wall.setScale(10,0.2,8)
+        f2_wall.setPos(10,40,0)
+        self.walls.append(f2_wall)
+        f0_wall = self.loader.loadModel("models/box")
+        f0_wall.reparentTo(render)
+        f0_wall.setScale(10,0.2,4)
+        f0_wall.setPos(0,40,4)
+        #pas de collision
 
         tex = self.loader.loadTexture("texture_mur.png")
 
@@ -209,12 +250,20 @@ class TacticalFPS(ShowBase):
         l2_wall.setTexture(tex, 1)
         l3_wall.setTexture(tex, 1)
         r3_wall.setTexture(tex, 1)
+        r4_wall.setTexture(tex, 1)
+        l4_wall.setTexture(tex, 1)
+        f_wall.setTexture(tex, 1)
+        f1_wall.setTexture(tex, 1)
+        f2_wall.setTexture(tex, 1)
+        f0_wall.setTexture(tex, 1)
+
 
         texsol = self.loader.loadTexture("texture_sol.png")
 
         floor.setTexture(texsol, 1)
         floor2.setTexture(texsol, 1)
         floor3.setTexture(texsol, 1)
+        floor4.setTexture(texsol, 1)
 
         textoit = self.loader.loadTexture("texture_toit.png")
         textoit2 = self.loader.loadTexture("texture_toit2.png")
@@ -222,6 +271,7 @@ class TacticalFPS(ShowBase):
         toit.setTexture(textoit,1)
         toit2.setTexture(textoit2,1)
         toit3.setTexture(textoit,1)
+        toit4.setTexture(textoit2,1)
 
 
         import random
@@ -229,9 +279,9 @@ class TacticalFPS(ShowBase):
         self.enemies = []
 
         positions = [
-            (5, 80, 1),
-            (2, 100, 1),
-            (8, 120, 1)
+            (5, 100, 1),
+            (2, 120, 1),
+            (8, 140, 1)
         ]
 
         for pos in positions:
@@ -354,7 +404,7 @@ class TacticalFPS(ShowBase):
                 best_dot = body_dot
                 best_enemy = enemy
                 best_hit = "body"
-        
+
         if best_enemy:
 
             if best_hit == "head" and best_dot > 0.999:
@@ -379,7 +429,7 @@ class TacticalFPS(ShowBase):
         self.ammo_text.setText(
             f"{self.player.weapon.magazine}/30"
         )
-        #print("Camera:", self.camera.getPos())
+        print("Camera:", self.camera.getPos())
         if self.mouse_locked and self.mouseWatcherNode.hasMouse():
 
             mouse = self.win.getPointer(0)
