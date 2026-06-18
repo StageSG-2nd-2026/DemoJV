@@ -354,7 +354,7 @@ class TacticalFPS(ShowBase):
                 best_dot = body_dot
                 best_enemy = enemy
                 best_hit = "body"
-
+        
         if best_enemy:
 
             if best_hit == "head" and best_dot > 0.999:
