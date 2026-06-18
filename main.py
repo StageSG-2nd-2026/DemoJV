@@ -50,6 +50,7 @@ class TacticalFPS(ShowBase):
         return False
 
     def __init__(self):
+
         self.shooting = False
         self.fire_rate = 0.10      # 80 ms entre les balles (~750 RPM)
         self.fire_timer = 0
@@ -67,6 +68,7 @@ class TacticalFPS(ShowBase):
         self.enemy_shot_timer = 0
 
         ShowBase.__init__(self)
+
 
         # Configuration de la fenêtre
         props = WindowProperties()
@@ -98,6 +100,8 @@ class TacticalFPS(ShowBase):
         for key in ["z", "q", "s", "d",]:
             self.accept(key, self.set_key, [key, True])
             self.accept(key + "-up", self.set_key, [key, False])
+
+
 
 
     def set_key(self, key, value):
@@ -310,9 +314,9 @@ class TacticalFPS(ShowBase):
         self.enemies = []
 
         positions = [
-            (5, 100, 1),
-            (2, 120, 1),
-            (8, 140, 1)
+            (5, 110, 1),
+            (3, 120, 1),
+            (7, 120, 1)
         ]
         for pos in positions:
 
