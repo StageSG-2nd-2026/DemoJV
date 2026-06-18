@@ -1,3 +1,6 @@
+from platform import node
+from turtle import forward
+
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import WindowProperties
 from entities import Player, Enemy
@@ -47,6 +50,9 @@ class TacticalFPS(ShowBase):
         return False
 
     def __init__(self):
+        self.shooting = False
+        self.fire_rate = 0.10      # 80 ms entre les balles (~750 RPM)
+        self.fire_timer = 0
         self.accept("space", self.jump)
         self.mouse_locked = True
         self.accept("o", self.toggle_mouse)
@@ -80,7 +86,8 @@ class TacticalFPS(ShowBase):
         self.setup_ui()
 
         # Events
-        self.accept("mouse1", self.handle_shoot)
+        self.accept("mouse1", self.start_shooting)
+        self.accept("mouse1-up", self.stop_shooting)
         self.accept("r", self.player.weapon.reload)
         self.accept("escape", sys.exit)
 
@@ -217,26 +224,40 @@ class TacticalFPS(ShowBase):
         toit3.setTexture(textoit,1)
 
 
-        # Ennemi parent
-        self.enemy_model = render.attachNewNode("enemy")
-        self.enemy_model.setPos(5, 80, 1)
+        import random
 
-# Corps
-        self.enemy_body = self.loader.loadModel("models/box")
-        self.enemy_body.reparentTo(self.enemy_model)
-        self.enemy_body.setScale(1, 1, 1.5)
-        self.enemy_body.setPos(0, 0, 0)
+        self.enemies = []
 
-# Tête
-        self.enemy_head = self.loader.loadModel("models/box")
-        self.enemy_head.reparentTo(self.enemy_model)
-        self.enemy_head.setScale(0.6)
-        self.enemy_head.setPos(0, 0, 1.8)
+        positions = [
+            (5, 80, 1),
+            (2, 100, 1),
+            (8, 120, 1)
+        ]
 
-        self.enemy_body.setColor(1, 0, 0, 1)
-        self.enemy_head.setColor(1, 0.8, 0.8, 1)
+        for pos in positions:
 
-        self.enemy_hp = 150
+            enemy = render.attachNewNode("enemy")
+            enemy.setPos(*pos)
+
+            body = self.loader.loadModel("models/box")
+            body.reparentTo(enemy)
+            body.setScale(1, 1, 1.5)
+            body.setColor(1, 0, 0, 1)
+
+            head = self.loader.loadModel("models/box")
+            head.reparentTo(enemy)
+            head.setScale(0.6)
+            head.setPos(0, 0, 1.8)
+            head.setColor(1, 0.8, 0.8, 1)
+
+            self.enemies.append({
+            "node": enemy,
+            "body": body,
+            "head": head,
+            "hp": 150,
+            "velocity_z": 0,
+            "jump_timer": random.uniform(0.5, 1.5)
+            })
 
 
         #self.finish = finish
@@ -267,7 +288,6 @@ class TacticalFPS(ShowBase):
         )
 
     def handle_shoot(self):
-
         bang = loader.loadSfx("bang.mp3")
 
         if self.player.weapon.magazine <= 0:
@@ -275,7 +295,9 @@ class TacticalFPS(ShowBase):
             return
 
         self.player.weapon.magazine -= 1
-
+        import random
+        self.pitch += random.uniform(0.8, 1.5)
+        self.heading -= random.uniform(-0.4, 0.4)
         self.show_message("Bang !", 0.3)
         bang.play()
 
@@ -300,19 +322,18 @@ class TacticalFPS(ShowBase):
         )
 
         # Détection de touche
-        if self.enemy_model is None:
-            return
-        else:
+        origin = self.camera.getPos()
+        forward = self.camera.getQuat().getForward()
 
-            enemy_pos = self.enemy_model.getPos()
+        best_enemy = None
+        best_hit = None
+        best_dot = 0
 
-            origin = self.camera.getPos()
-            forward = self.camera.getQuat().getForward()
+        for enemy in self.enemies:
 
-            # Centre du corps
+            enemy_pos = enemy["node"].getPos()
+
             body_pos = enemy_pos
-
-# Centre de la tête
             head_pos = enemy_pos + (0, 0, 1.8)
 
             body_dir = body_pos - origin
@@ -323,32 +344,34 @@ class TacticalFPS(ShowBase):
 
             body_dot = forward.dot(body_dir)
             head_dot = forward.dot(head_dir)
-            if head_dot > 0.999:
 
-                self.enemy_hp -= 100
+            if head_dot > best_dot:
+                best_dot = head_dot
+                best_enemy = enemy
+                best_hit = "head"
 
-                self.show_message(
-                    f"HEADSHOT ! ({self.enemy_hp} PV)",
-                    1
-                )
+            if body_dot > best_dot:
+                best_dot = body_dot
+                best_enemy = enemy
+                best_hit = "body"
 
-            elif body_dot > 0.99:
+        if best_enemy:
 
-                self.enemy_hp -= 40
+            if best_hit == "head" and best_dot > 0.999:
+                best_enemy["hp"] -= 100
+                self.show_message("HEADSHOT !", 1)
 
-                self.show_message(
-                    f"Touché ! ({self.enemy_hp} PV)",
-                    0.8
-                )
+            elif best_hit == "body" and best_dot > 0.99:
+                best_enemy["hp"] -= 40
+                self.show_message("Touché !", 0.8)
 
-            if self.enemy_hp <= 0:
+            if best_enemy["hp"] <= 0:
 
-                        self.show_message("ENNEMI TUÉ +100", 1.5)
+                best_enemy["node"].removeNode()
+                self.enemies.remove(best_enemy)
 
-                        self.player.score += 100
-
-                        self.enemy_model.removeNode()
-                        self.enemy_model = None
+                self.player.score += 100
+                self.show_message("ENNEMI TUÉ +100", 1.5)
 
 
     def update(self, task):
@@ -388,6 +411,13 @@ class TacticalFPS(ShowBase):
 
 
         dt = globalClock.getDt()
+        self.fire_timer -= dt
+
+        if self.shooting and self.fire_timer <= 0:
+
+            self.handle_shoot()
+
+            self.fire_timer = self.fire_rate
 
         speed = 20
 
@@ -475,9 +505,13 @@ class TacticalFPS(ShowBase):
         self.camera.setZ(new_z)
 #
         # IA ennemi simple
-        if self.enemy_model:
+        import random
 
-            enemy_pos = self.enemy_model.getPos()
+        for enemy in self.enemies:
+
+            node = enemy["node"]
+
+            enemy_pos = node.getPos()
             player_pos = self.camera.getPos()
 
             direction = player_pos - enemy_pos
@@ -487,19 +521,61 @@ class TacticalFPS(ShowBase):
 
                 direction.normalize()
 
-                self.enemy_model.setPos(
-                    enemy_pos + direction * 2 * dt
+                strafe = direction.cross((0, 0, 1))
+                strafe.normalize()
+
+                move = (
+                    direction * 10 +
+                    strafe * random.uniform(-4, 4)
                 )
 
-                self.enemy_model.lookAt(self.camera)
-        if self.enemy_model:
+                move.normalize()
 
-            self.enemy_shot_timer -= dt
+                node.setPos(
+                    enemy_pos +
+                    move * 12 * dt
+                )
 
-            distance = (
-            self.enemy_model.getPos()
-            - self.camera.getPos()
-            ).length()
+                node.lookAt(self.camera)
+            enemy["jump_timer"] -= dt
+
+            if enemy["jump_timer"] <= 0:
+
+                enemy["velocity_z"] = 8
+                enemy["jump_timer"] = random.uniform(0.4, 1.0)
+
+            enemy["velocity_z"] -= 25 * dt
+
+            new_z = (
+                node.getZ() +
+                enemy["velocity_z"] * dt
+            )
+
+            if new_z < 1:
+                new_z = 1
+                enemy["velocity_z"] = 0
+
+            node.setZ(new_z)
+        self.enemy_shot_timer -= dt
+        if len(self.enemies) == 0:
+            return task.cont
+        distance = (
+            node.getPos() -
+            self.camera.getPos()
+        ).length()
+
+        if distance < 25:
+
+            if self.enemy_shot_timer <= 0:
+
+                self.player_hp -= 5
+
+                self.show_message(
+                    f"-5 HP ({self.player_hp})",
+                    0.5
+                )
+
+                self.enemy_shot_timer = 0.5
 
             if distance < 20:
 
@@ -567,6 +643,11 @@ class TacticalFPS(ShowBase):
         if self.on_ground:
             self.vertical_velocity = self.jump_force
             self.on_ground = False
+    def start_shooting(self):
+        self.shooting = True
+
+    def stop_shooting(self):
+        self.shooting = False
 
 if __name__ == "__main__":
     game = TacticalFPS()
