@@ -596,10 +596,10 @@ class TacticalFPS(ShowBase):
             distance = direction.length()
 
 # L'ennemi ne s'active qu'à moins de 60 mètres
-            if distance < 60:
+            if distance <= 60:
 
     # Il s'arrête à 10 mètres du joueur
-                if distance > 10:
+                if distance >= 20:
 
                     direction.normalize()
 
@@ -647,7 +647,7 @@ class TacticalFPS(ShowBase):
             self.camera.getPos()
         ).length()
 
-        if distance < 25:
+        if distance <= 25:
 
             if self.enemy_shot_timer <= 0:
 
@@ -660,7 +660,7 @@ class TacticalFPS(ShowBase):
 
                 self.enemy_shot_timer = 0.5
 
-            if distance < 20:
+            if distance <= 20:
 
                 if self.enemy_shot_timer <= 0:
                     from panda3d.core import LineSegs
