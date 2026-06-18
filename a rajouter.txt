@@ -1,12 +1,11 @@
-dans setup_lvl
+a rajouter avant if head_dot > 0,999:
+distance = ((enemy_pos[0]-origin[0])**2+(enemy_pos[1]-origin[1])**2)**0.5
 
-musique = loader.loadMusic("Ambiance.mp3")
-musique.setLoop(True)
-musique.play()
-
-dans handle_shoot
-bang = loader.loadSfx("bang.mp3")
-
-après self.show_message("Bang !", 0.3)
-
-bang.play()
+ensuite remplacer 
+if head_dot > 0,999:
+par
+if head_dot > 0,999 and distance<50:
+et
+elif body_dot > 0.99:
+par
+elif body_dot > 0.99 and distance<50:
