@@ -353,8 +353,7 @@ class TacticalFPS(ShowBase):
         self.crosshair = OnscreenText(
             text="+",
             pos=(0, 0),
-            scale=0.3,
-            fg=(0, 1, 0, 1)
+            scale=0.3
         )
 
         self.message_text = OnscreenText(
@@ -362,8 +361,7 @@ class TacticalFPS(ShowBase):
             pos=(-0.7, 0.9),      # haut droite
             align=1,             # texte aligné à droite
             scale=0.05,
-            mayChange=True,
-            fg=(1,1,1,1)
+            mayChange=True
         )
 
         self.ammo_text = OnscreenText(
@@ -371,8 +369,7 @@ class TacticalFPS(ShowBase):
             pos=(1.3, -0.9),
             align=1,
             scale=0.2,
-            mayChange=True,
-            fg=(1,1,1,1)
+            mayChange=True
         )
 
         from direct.gui.DirectGui import DirectWaitBar
@@ -402,7 +399,6 @@ class TacticalFPS(ShowBase):
         from panda3d.core import LineSegs
 
         line = LineSegs()
-        line.setColor(1, 1, 0, 1)
         line.moveTo(self.camera.getPos())
         forward = self.camera.getQuat().getForward()
 
@@ -733,6 +729,7 @@ class TacticalFPS(ShowBase):
 
 
 #
+        print(self.camera.getY())
         if self.camera.getY() > 200:
             self.end_game()
 
@@ -740,11 +737,52 @@ class TacticalFPS(ShowBase):
         return task.cont
 
     def end_game(self):
+
+        from direct.gui.OnscreenText import OnscreenText
+        from panda3d.core import TextNode
+
+    # éviter de recréer les textes à chaque frame
+        if hasattr(self, "victory_shown"):
+            return
+
+        self.victory_shown = True
+
         total_time = self.score_manager.get_elapsed_time()
-        final_score = self.score_manager.calculate_final_score(self.player, total_time)
+        final_score = self.score_manager.calculate_final_score(
+            self.player,
+            total_time
+        )
+
         rank = self.score_manager.get_rank(final_score)
-        print(f"Game Over! Score: {final_score}, Rank: {rank}")
-        sys.exit()
+
+        OnscreenText(
+            text="MISSION ACCOMPLIE",
+            pos=(0, 0.3),
+            scale=0.15,
+            fg=(0, 1, 0, 1),
+            align=TextNode.ACenter
+        )
+
+        OnscreenText(
+        text=f"Score : {final_score}",
+        pos=(0, 0.05),
+        scale=0.1,
+        align=TextNode.ACenter
+        )
+
+        OnscreenText(
+        text=f"Rang : {rank}",
+        pos=(0, -0.1),
+        scale=0.08,
+        fg=(1, 1, 0, 1),
+        align=TextNode.ACenter
+        )
+
+        self.taskMgr.doMethodLater(
+        5,
+        self.quit_game,
+        "victory_quit"
+        )
     def toggle_mouse(self):
         props = WindowProperties()
         self.mouse_locked = not self.mouse_locked
