@@ -550,7 +550,7 @@ class TacticalFPS(ShowBase):
 
     def update(self, task):
 
-        self.skybox.setPos((self.camera.getX()-500,self.camera.getY()-500,0))
+        self.skybox.setPos((self.camera.getX()-500,self.camera.getY()-500,-5))
 
         self.ammo_text.setText(
             f"{self.player.weapon.magazine}/30"
