@@ -160,6 +160,10 @@ class TacticalFPS(ShowBase):
         floor5.reparentTo(render)
         floor5.setScale(90,10,0.2)
         floor5.setPos(-40,190,0)
+        floor6 = self.loader.loadModel("models/box")
+        floor6.reparentTo(render)
+        floor6.setScale(10,40,0.2)
+        floor6.setPos(-10,150,0)
 
 
     # Toit
@@ -183,6 +187,10 @@ class TacticalFPS(ShowBase):
         toit5.reparentTo(render)
         toit5.setScale(90,10,0.2)
         toit5.setPos(-40,190,4)
+        toit6 = self.loader.loadModel("models/box")
+        toit6.reparentTo(render)
+        toit6.setScale(10,40,0.2)
+        toit6.setPos(-10,150,4)
 
     # Mur gauche
         left_wall = self.loader.loadModel("models/box")
@@ -323,6 +331,8 @@ class TacticalFPS(ShowBase):
         floor3.setTexture(texsol, 1)
         floor4.setTexture(texsol, 1)
         floor5.setTexture(texsol, 1)
+        floor6.setTexture(texsol, 1)
+
 
         textoit = self.loader.loadTexture("texture_toit.png")
         textoit2 = self.loader.loadTexture("texture_toit2.png")
@@ -332,6 +342,7 @@ class TacticalFPS(ShowBase):
         toit3.setTexture(textoit,1)
         toit4.setTexture(textoit2,1)
         toit5.setTexture(textoit2,1)
+        toit6.setTexture(textoit,1)
 
 
         import random
