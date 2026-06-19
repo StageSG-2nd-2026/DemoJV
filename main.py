@@ -70,6 +70,9 @@ class TacticalFPS(ShowBase):
         self.enemy_shot_timer = 0
 
         ShowBase.__init__(self)
+        self.crouching = False
+        self.accept("c", self.start_crouch)
+        self.accept("c-up", self.stop_crouch)
         self.kill_sounds = [
             self.loader.loadSfx("killsound1.mp3"),
             self.loader.loadSfx("killsound2.mp3"),
@@ -77,6 +80,9 @@ class TacticalFPS(ShowBase):
             self.loader.loadSfx("killsound4.mp3"),
             self.loader.loadSfx("killsound5.mp3")
         ]
+        for sound in self.kill_sounds:
+            sound.setVolume(10.0)
+        
 
         self.kill_index = 0
 
@@ -391,7 +397,8 @@ class TacticalFPS(ShowBase):
             (5, 110, 1),
             (3, 120, 1),
             (7, 120, 1),
-            (-5,169.5,1)]
+            (-5,169.5,1),
+            (-5, 180, 1)]
         for pos in positions:
 
             enemy = render.attachNewNode("enemy")
@@ -468,8 +475,15 @@ class TacticalFPS(ShowBase):
 
         self.player.weapon.magazine -= 1
         import random
-        self.pitch += random.uniform(0.8, 1.5)
-        self.heading -= random.uniform(-0.4, 0.4)
+        if self.crouching:
+
+            self.pitch += random.uniform(0.3, 0.7)
+            self.heading -= random.uniform(-0.15, 0.15)
+
+        else:
+
+            self.pitch += random.uniform(0.8, 1.5)
+            self.heading -= random.uniform(-0.4, 0.4)
         self.show_message("Bang !", 0.3)
         bang.play()
 
@@ -616,6 +630,8 @@ class TacticalFPS(ShowBase):
             self.fire_timer = self.fire_rate
 
         speed = 20 + self.air_speed_bonus
+        if self.crouching:
+            speed *= 0.6
 
         forward = self.camera.getQuat().getForward()
         right = self.camera.getQuat().getRight()
@@ -683,7 +699,7 @@ class TacticalFPS(ShowBase):
 
         new_z = self.camera.getZ() + self.vertical_velocity * dt
 
-        ground_height = 1.8
+        ground_height = 1.0 if self.crouching else 1.8
 
         if new_z <= ground_height:
             new_z = ground_height
@@ -889,6 +905,18 @@ class TacticalFPS(ShowBase):
 
             self.air_speed_bonus += 2
             self.air_speed_bonus = min(self.air_speed_bonus, 12)
+    def start_crouch(self):
+
+        self.crouching = True
+
+        self.camera.setZ(1.0)
+
+    def stop_crouch(self):
+
+        self.crouching = False
+
+        if self.on_ground:
+            self.camera.setZ(1.8)
     def increase_sensitivity(self):
         self.mouse_sensitivity += 0.01
         self.show_message(f"Sensibilité souris: {self.mouse_sensitivity:.2f}", 1)
