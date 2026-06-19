@@ -50,6 +50,7 @@ class TacticalFPS(ShowBase):
         return False
 
     def __init__(self):
+
         self.shooting = False
         self.fire_rate = 0.15      # 80 ms entre les balles (~750 RPM)
         self.fire_timer = 0
@@ -67,6 +68,7 @@ class TacticalFPS(ShowBase):
         self.enemy_shot_timer = 0
 
         ShowBase.__init__(self)
+
 
         # Configuration de la fenêtre
         props = WindowProperties()
@@ -100,6 +102,8 @@ class TacticalFPS(ShowBase):
             self.accept(key + "-up", self.set_key, [key, False])
 
 
+
+
     def set_key(self, key, value):
         self.keys[key] = value
 
@@ -130,8 +134,8 @@ class TacticalFPS(ShowBase):
         self.walls = []
         self.disableMouse()
 
-        self.camera.setPos(5, 40, 1.8)
-        self.camera.lookAt(0,0,0)
+        self.camera.setPos(5, 21, 1.8)
+        self.camera.lookAt(5,0,1.8)
 
     # Sol
         floor = self.loader.loadModel("models/box")
@@ -144,8 +148,16 @@ class TacticalFPS(ShowBase):
         floor2.setPos(-50, 140, 0)
         floor3 = self.loader.loadModel("models/box")
         floor3.reparentTo(render)
-        floor3.setScale(10, 40, 0.2)
+        floor3.setScale(10, 50, 0.2)
         floor3.setPos(-50, 150, 0)
+        floor4 = self.loader.loadModel("models/box")
+        floor4.reparentTo(render)
+        floor4.setScale(30, 20, 0.2)
+        floor4.setPos(-10, 20, 0)
+        floor5 = self.loader.loadModel("models/box")
+        floor5.reparentTo(render)
+        floor5.setScale(90,10,0.2)
+        floor5.setPos(-40,190,0)
 
 
     # Toit
@@ -159,8 +171,16 @@ class TacticalFPS(ShowBase):
         toit2.setPos(-50, 140, 4)
         toit3 = self.loader.loadModel("models/box")
         toit3.reparentTo(render)
-        toit3.setScale(10, 40, 0.2)
+        toit3.setScale(10, 50, 0.2)
         toit3.setPos(-50, 150, 4)
+        toit4 = self.loader.loadModel("models/box")
+        toit4.reparentTo(render)
+        toit4.setScale(30, 20, 0.2)
+        toit4.setPos(-10, 20, 8)
+        toit5 = self.loader.loadModel("models/box")
+        toit5.reparentTo(render)
+        toit5.setScale(90,10,0.2)
+        toit5.setPos(-40,190,4)
 
     # Mur gauche
         left_wall = self.loader.loadModel("models/box")
@@ -191,7 +211,7 @@ class TacticalFPS(ShowBase):
     # Mur de gauche 3
         l3_wall = self.loader.loadModel("models/box")
         l3_wall.reparentTo(render)
-        l3_wall.setScale(0.2, 50, 4)
+        l3_wall.setScale(0.2, 60, 4)
         l3_wall.setPos(-50, 140, 0)
         self.walls.append(l3_wall)
     # Mur de droite 3
@@ -200,6 +220,57 @@ class TacticalFPS(ShowBase):
         r3_wall.setScale(0.2, 40, 4)
         r3_wall.setPos(-40, 150, 0)
         self.walls.append(r3_wall)
+    # Mur de gauche debut
+        r4_wall = self.loader.loadModel("models/box")
+        r4_wall.reparentTo(render)
+        r4_wall.setScale(0.2,20,8)
+        r4_wall.setPos(-10,20,0)
+        self.walls.append(r4_wall)
+    # Mur de droite debut
+        l4_wall = self.loader.loadModel("models/box")
+        l4_wall.reparentTo(render)
+        l4_wall.setScale(0.2,20,8)
+        l4_wall.setPos(20,20,0)
+        self.walls.append(l4_wall)
+    # Mur de fond
+        f_wall = self.loader.loadModel("models/box")
+        f_wall.reparentTo(render)
+        f_wall.setScale(30,0.2,8)
+        f_wall.setPos(-10,20,0)
+        self.walls.append(f_wall)
+        f1_wall = self.loader.loadModel("models/box")
+        f1_wall.reparentTo(render)
+        f1_wall.setScale(10,0.2,8)
+        f1_wall.setPos(-10,40,0)
+        self.walls.append(f1_wall)
+        f2_wall = self.loader.loadModel("models/box")
+        f2_wall.reparentTo(render)
+        f2_wall.setScale(10,0.2,8)
+        f2_wall.setPos(10,40,0)
+        self.walls.append(f2_wall)
+        f0_wall = self.loader.loadModel("models/box")
+        f0_wall.reparentTo(render)
+        f0_wall.setScale(10,0.2,4)
+        f0_wall.setPos(0,40,4)
+        #pas de collision
+        #mur gauche5
+        l5_wall = self.loader.loadModel("models/box")
+        l5_wall.reparentTo(render)
+        l5_wall.setScale(100,0.2,4)
+        l5_wall.setPos(-50,200,0)
+        self.walls.append(l5_wall)
+        #mur droite5
+        r5_wall = self.loader.loadModel("models/box")
+        r5_wall.reparentTo(render)
+        r5_wall.setScale(30,0.2,4)
+        r5_wall.setPos(-40,190,0)
+        self.walls.append(r5_wall)
+        r5b_wall = self.loader.loadModel("models/box")
+        r5b_wall.reparentTo(render)
+        r5b_wall.setScale(50,0.2,4)
+        r5b_wall.setPos(0,190,0)
+        self.walls.append(r5b_wall)
+
 
         tex = self.loader.loadTexture("texture_mur.png")
 
@@ -209,12 +280,24 @@ class TacticalFPS(ShowBase):
         l2_wall.setTexture(tex, 1)
         l3_wall.setTexture(tex, 1)
         r3_wall.setTexture(tex, 1)
+        r4_wall.setTexture(tex, 1)
+        l4_wall.setTexture(tex, 1)
+        f_wall.setTexture(tex, 1)
+        f1_wall.setTexture(tex, 1)
+        f2_wall.setTexture(tex, 1)
+        f0_wall.setTexture(tex, 1)
+        l5_wall.setTexture(tex, 1)
+        r5_wall.setTexture(tex, 1)
+        r5b_wall.setTexture(tex, 1)
+
 
         texsol = self.loader.loadTexture("texture_sol.png")
 
         floor.setTexture(texsol, 1)
         floor2.setTexture(texsol, 1)
         floor3.setTexture(texsol, 1)
+        floor4.setTexture(texsol, 1)
+        floor5.setTexture(texsol, 1)
 
         textoit = self.loader.loadTexture("texture_toit.png")
         textoit2 = self.loader.loadTexture("texture_toit2.png")
@@ -222,6 +305,8 @@ class TacticalFPS(ShowBase):
         toit.setTexture(textoit,1)
         toit2.setTexture(textoit2,1)
         toit3.setTexture(textoit,1)
+        toit4.setTexture(textoit2,1)
+        toit5.setTexture(textoit2,1)
 
 
         import random
@@ -229,11 +314,10 @@ class TacticalFPS(ShowBase):
         self.enemies = []
 
         positions = [
-            (5, 80, 1),
-            (2, 100, 1),
-            (8, 120, 1)
+            (5, 110, 1),
+            (3, 120, 1),
+            (7, 120, 1)
         ]
-
         for pos in positions:
 
             enemy = render.attachNewNode("enemy")
@@ -285,6 +369,16 @@ class TacticalFPS(ShowBase):
             align=1,
             scale=0.2,
             mayChange=True
+        )
+
+        from direct.gui.DirectGui import DirectWaitBar
+
+        self.hp_bar = DirectWaitBar(
+            text="Vie",
+            value=100,
+            range=100,
+            pos=(-1.15, 0, -0.9),   # bas gauche
+            scale=(0.4, 1, 0.5)
         )
 
     def handle_shoot(self):
@@ -354,7 +448,7 @@ class TacticalFPS(ShowBase):
                 best_dot = body_dot
                 best_enemy = enemy
                 best_hit = "body"
-        
+
         if best_enemy:
 
             if best_hit == "head" and best_dot > 0.999:
@@ -379,7 +473,17 @@ class TacticalFPS(ShowBase):
         self.ammo_text.setText(
             f"{self.player.weapon.magazine}/30"
         )
-        #print("Camera:", self.camera.getPos())
+
+        self.hp_bar["value"] = self.player_hp
+        self.hp_bar["text"] = f"{self.player_hp} HP"
+        if self.player_hp > 60:
+            self.hp_bar["barColor"] = (0, 1, 0, 1)      # vert
+
+        elif self.player_hp > 30:
+            self.hp_bar["barColor"] = (1, 0.6, 0, 1)    # orange
+
+        else:
+            self.hp_bar["barColor"] = (1, 0, 0, 1)      # rouge
         if self.mouse_locked and self.mouseWatcherNode.hasMouse():
 
             mouse = self.win.getPointer(0)
@@ -524,24 +628,31 @@ class TacticalFPS(ShowBase):
             direction = player_pos - enemy_pos
             direction.setZ(0)
 
-            if direction.length() > 0:
+            distance = direction.length()
 
-                direction.normalize()
+# L'ennemi ne s'active qu'à moins de 60 mètres
+            if distance <= 60:
 
-                strafe = direction.cross((0, 0, 1))
-                strafe.normalize()
+    # Il s'arrête à 10 mètres du joueur
+                if distance >= 20:
 
-                move = (
-                    direction * 10 +
-                    strafe * random.uniform(-4, 4)
-                )
+                    direction.normalize()
 
-                move.normalize()
+                    strafe = direction.cross((0, 0, 1))
+                    strafe.normalize()
 
-                node.setPos(
-                    enemy_pos +
-                    move * 12 * dt
-                )
+                    move = (
+                        direction * 10 +
+                        strafe * random.uniform(-4, 4)
+                    )
+
+                    move.normalize()
+
+                    new_pos = enemy_pos + move * 12 * dt
+
+                    # Collision avec les murs
+                    if not self.collides_with_wall(new_pos):
+                        node.setPos(new_pos)
 
                 node.lookAt(self.camera)
             enemy["jump_timer"] -= dt
@@ -549,7 +660,7 @@ class TacticalFPS(ShowBase):
             if enemy["jump_timer"] <= 0:
 
                 enemy["velocity_z"] = 8
-                enemy["jump_timer"] = random.uniform(0.4, 1.0)
+                enemy["jump_timer"] = random.uniform(1, 1.5)
 
             enemy["velocity_z"] -= 25 * dt
 
@@ -571,7 +682,7 @@ class TacticalFPS(ShowBase):
             self.camera.getPos()
         ).length()
 
-        if distance < 25:
+        if distance <= 25:
 
             if self.enemy_shot_timer <= 0:
 
@@ -584,7 +695,7 @@ class TacticalFPS(ShowBase):
 
                 self.enemy_shot_timer = 0.5
 
-            if distance < 20:
+            if distance <= 20:
 
                 if self.enemy_shot_timer <= 0:
                     from panda3d.core import LineSegs
