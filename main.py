@@ -354,7 +354,8 @@ class TacticalFPS(ShowBase):
         self.crosshair = OnscreenText(
             text="+",
             pos=(0, 0),
-            scale=0.3
+            scale=0.3,
+            fg=(0, 1, 0, 1)
         )
 
         self.message_text = OnscreenText(
@@ -362,7 +363,8 @@ class TacticalFPS(ShowBase):
             pos=(-0.7, 0.9),      # haut droite
             align=1,             # texte aligné à droite
             scale=0.05,
-            mayChange=True
+            mayChange=True,
+            fg=(1,1,1,1)
         )
 
         self.ammo_text = OnscreenText(
@@ -370,7 +372,8 @@ class TacticalFPS(ShowBase):
             pos=(1.3, -0.9),
             align=1,
             scale=0.2,
-            mayChange=True
+            mayChange=True,
+            fg=(1,1,1,1)
         )
 
         from direct.gui.DirectGui import DirectWaitBar
@@ -400,6 +403,7 @@ class TacticalFPS(ShowBase):
         from panda3d.core import LineSegs
 
         line = LineSegs()
+        line.setColor(1, 1, 0, 1)
         line.moveTo(self.camera.getPos())
         forward = self.camera.getQuat().getForward()
 
