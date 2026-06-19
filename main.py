@@ -432,7 +432,7 @@ class TacticalFPS(ShowBase):
         )
 
     def handle_shoot(self):
-        bang = loader.loadSfx("bang.mp3")
+        bang = loader.loadSfx("shoot.mp3")
 
         if self.player.weapon.magazine <= 0:
             self.show_message("Recharge !", 1)
