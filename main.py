@@ -319,8 +319,7 @@ class TacticalFPS(ShowBase):
         positions = [
             (5, 110, 1),
             (3, 120, 1),
-            (7, 120, 1)
-        ]
+            (7, 120, 1)]
         for pos in positions:
 
             enemy = render.attachNewNode("enemy")
@@ -677,56 +676,45 @@ class TacticalFPS(ShowBase):
                 enemy["velocity_z"] = 0
 
             node.setZ(new_z)
-        self.enemy_shot_timer -= dt
-        if len(self.enemies) == 0:
-            return task.cont
-        distance = (
-            node.getPos() -
-            self.camera.getPos()
-        ).length()
+            self.enemy_shot_timer -= dt
+            if len(self.enemies) == 0:
+                return task.cont
+            distance = (
+                node.getPos() -
+                self.camera.getPos()
+            ).length()
 
-        if distance <= 25:
 
-            if self.enemy_shot_timer <= 0:
-
-                self.player_hp -= 5
-
-                self.show_message(
-                    f"-5 HP ({self.player_hp})",
-                    0.5
-                )
-
-                self.enemy_shot_timer = 0.5
 
             if distance <= 20:
 
-                if self.enemy_shot_timer <= 0:
-                    from panda3d.core import LineSegs
+                    if self.enemy_shot_timer <= 0:
+                        from panda3d.core import LineSegs
 
-                    line = LineSegs()
-                    line.setColor(1, 0, 0)
-                    line.setThickness(2)
-                    line.moveTo(self.enemy_model.getPos())
-                    line.drawTo(self.camera.getPos())
+                        line = LineSegs()
+                        line.setColor(1, 0, 0)
+                        line.setThickness(2)
+                        line.moveTo(node.getPos())
+                        line.drawTo(self.camera.getPos())
 
-                    beam = render.attachNewNode(line.create())
-                    bang = loader.loadSfx("tire.mp3")
-                    bang.play()
+                        beam = render.attachNewNode(line.create())
+                        bang = loader.loadSfx("tire.mp3")
+                        bang.play()
 
-                    self.taskMgr.doMethodLater(
+                        self.taskMgr.doMethodLater(
                          0.05,
                         lambda task, b=beam: (b.removeNode(), task.done)[1],
                         f"enemy_beam_{id(beam)}"
-                    )
+                        )
 
-                    self.player_hp -= 10
+                        self.player_hp -= 5
 
-                    self.show_message(
+                        self.show_message(
                         f"-10 HP ({self.player_hp})",
                         0.5
-                    )
+                        )
 
-                    self.enemy_shot_timer = 1
+                        self.enemy_shot_timer = 3
 
 
 
