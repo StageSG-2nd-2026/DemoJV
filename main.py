@@ -272,6 +272,25 @@ class TacticalFPS(ShowBase):
         r5b_wall.setScale(50,0.2,4)
         r5b_wall.setPos(0,190,0)
         self.walls.append(r5b_wall)
+        l6_wall = self.loader.loadModel("models/box")
+        l6_wall.reparentTo(render)
+        l6_wall.setScale(0.2,40,4)
+        l6_wall.setPos(-10,150,0)
+        self.walls.append(l6_wall)
+        r6_wall = self.loader.loadModel("models/box")
+        r6_wall.reparentTo(render)
+        r6_wall.setScale(0.2,40,4)
+        r6_wall.setPos(0,150,0)
+        self.walls.append(r6_wall)
+        b6_wall = self.loader.loadModel("models/box")
+        b6_wall.reparentTo(render)
+        b6_wall.setScale(10,0.2,1.5)
+        b6_wall.setPos(-10,170,0)
+        self.walls.append(b6_wall)
+        b7_wall = self.loader.loadModel("models/box")
+        b7_wall.reparentTo(render)
+        b7_wall.setScale(10,0.2,1.5)
+        b7_wall.setPos(-10,170,2.5)
 
 
         tex = self.loader.loadTexture("texture_mur.png")
@@ -291,6 +310,10 @@ class TacticalFPS(ShowBase):
         l5_wall.setTexture(tex, 1)
         r5_wall.setTexture(tex, 1)
         r5b_wall.setTexture(tex, 1)
+        l6_wall.setTexture(tex, 1)
+        r6_wall.setTexture(tex, 1)
+        b6_wall.setTexture(tex, 1)
+        b7_wall.setTexture(tex, 1)
 
 
         texsol = self.loader.loadTexture("texture_sol.png")
@@ -353,8 +376,8 @@ class TacticalFPS(ShowBase):
         self.crosshair = OnscreenText(
             text="+",
             pos=(0, 0),
-            scale=0.3,
-            fg=(0, 1, 0, 1)
+            scale=0.3
+            ,fg=(0, 1, 0, 1)
         )
 
         self.message_text = OnscreenText(
@@ -362,8 +385,8 @@ class TacticalFPS(ShowBase):
             pos=(-0.7, 0.9),      # haut droite
             align=1,             # texte aligné à droite
             scale=0.05,
-            fg=(1, 1, 1, 1),
-            mayChange=True
+            mayChange=True,
+            fg=(1,1,1,1)
         )
 
         self.ammo_text = OnscreenText(
@@ -371,7 +394,8 @@ class TacticalFPS(ShowBase):
             pos=(1.3, -0.9),
             align=1,
             scale=0.2,
-            mayChange=True
+            mayChange=True,
+            fg=(1,1,1,1)
         )
 
         from direct.gui.DirectGui import DirectWaitBar
@@ -733,7 +757,7 @@ class TacticalFPS(ShowBase):
 
 #
         print(self.camera.getY())
-        if self.camera.getY() > 200:
+        if self.camera.getY() > 300:
             self.end_game()
 
 
