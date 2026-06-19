@@ -204,6 +204,10 @@ class TacticalFPS(ShowBase):
         toit6.reparentTo(render)
         toit6.setScale(10,40,0.2)
         toit6.setPos(-10,150,4)
+        interieurt = self.loader.loadModel("models/box")
+        interieurt.reparentTo(render)
+        interieurt.setScale(30, 40, 0.2)
+        interieurt.setPos(-40, 150, 4)
 
     # Mur gauche
         left_wall = self.loader.loadModel("models/box")
@@ -318,6 +322,19 @@ class TacticalFPS(ShowBase):
         b8_wall.setPos(-10,169,0)
         self.walls.append(b8_wall)
 
+        self.skybox = self.loader.loadModel("models/box")
+        self.skybox.reparentTo(render)
+        self.skybox.setScale(1000)
+        self.skybox.setLightOff()
+        self.skybox.setDepthWrite(False)
+        self.skybox.setBin("background", 0)
+        self.skybox.setTwoSided(True)
+        sky = self.loader.loadTexture("skybox.png")
+        self.skybox.setTexture(sky,1)
+
+
+
+
 
         tex = self.loader.loadTexture("texture_mur.png")
 
@@ -363,6 +380,7 @@ class TacticalFPS(ShowBase):
         toit4.setTexture(textoit2,1)
         toit5.setTexture(textoit2,1)
         toit6.setTexture(textoit,1)
+        interieurt.setTexture(textoit,1)
 
 
         import random
@@ -542,6 +560,8 @@ class TacticalFPS(ShowBase):
 
 
     def update(self, task):
+
+        self.skybox.setPos((self.camera.getX()-500,self.camera.getY()-500,-5))
 
         self.ammo_text.setText(
             f"{self.player.weapon.magazine}/30"
