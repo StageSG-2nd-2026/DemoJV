@@ -51,7 +51,7 @@ class TacticalFPS(ShowBase):
 
     def __init__(self):
         self.shooting = False
-        self.fire_rate = 0.10      # 80 ms entre les balles (~750 RPM)
+        self.fire_rate = 0.15      # 80 ms entre les balles (~750 RPM)
         self.fire_timer = 0
         self.accept("space", self.jump)
         self.mouse_locked = True
