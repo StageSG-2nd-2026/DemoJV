@@ -70,6 +70,15 @@ class TacticalFPS(ShowBase):
         self.enemy_shot_timer = 0
 
         ShowBase.__init__(self)
+        self.kill_sounds = [
+            self.loader.loadSfx("killsound1.mp3"),
+            self.loader.loadSfx("killsound2.mp3"),
+            self.loader.loadSfx("killsound3.mp3"),
+            self.loader.loadSfx("killsound4.mp3"),
+            self.loader.loadSfx("killsound5.mp3")
+        ]
+
+        self.kill_index = 0
 
 
         # Configuration de la fenêtre
@@ -432,7 +441,7 @@ class TacticalFPS(ShowBase):
         )
 
     def handle_shoot(self):
-        bang = loader.loadSfx("shoot.mp3")
+        bang = loader.loadSfx("sound.mp3")
 
         if self.player.weapon.magazine <= 0:
             self.show_message("Recharge !", 1)
@@ -522,10 +531,12 @@ class TacticalFPS(ShowBase):
                 self.show_message("Touché !", 0.8)
 
             if best_enemy["hp"] <= 0:
-
                 best_enemy["node"].removeNode()
                 self.enemies.remove(best_enemy)
-
+                self.kill_sounds[self.kill_index].play()
+                self.kill_index += 1
+                if self.kill_index >= len(self.kill_sounds):
+                    self.kill_index = 0
                 self.player.score += 100
                 self.show_message("ENNEMI TUÉ +100", 1.5)
 
