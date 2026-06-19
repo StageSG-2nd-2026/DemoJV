@@ -353,7 +353,8 @@ class TacticalFPS(ShowBase):
         self.crosshair = OnscreenText(
             text="+",
             pos=(0, 0),
-            scale=0.3
+            scale=0.3,
+            fg=(0, 1, 0, 1)
         )
 
         self.message_text = OnscreenText(
@@ -361,6 +362,7 @@ class TacticalFPS(ShowBase):
             pos=(-0.7, 0.9),      # haut droite
             align=1,             # texte aligné à droite
             scale=0.05,
+            fg=(1, 1, 1, 1),
             mayChange=True
         )
 
@@ -399,6 +401,7 @@ class TacticalFPS(ShowBase):
         from panda3d.core import LineSegs
 
         line = LineSegs()
+        line.setColor(1, 1, 0, 1)
         line.moveTo(self.camera.getPos())
         forward = self.camera.getQuat().getForward()
 
