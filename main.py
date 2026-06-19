@@ -164,6 +164,10 @@ class TacticalFPS(ShowBase):
         floor6.reparentTo(render)
         floor6.setScale(10,40,0.2)
         floor6.setPos(-10,150,0)
+        interieur = self.loader.loadModel("models/box")
+        interieur.reparentTo(render)
+        interieur.setScale(30, 40, 0.2)
+        interieur.setPos(-40, 150, 0)
 
 
     # Toit
@@ -287,18 +291,23 @@ class TacticalFPS(ShowBase):
         self.walls.append(l6_wall)
         r6_wall = self.loader.loadModel("models/box")
         r6_wall.reparentTo(render)
-        r6_wall.setScale(0.2,40,4)
+        r6_wall.setScale(0.2,45,4)
         r6_wall.setPos(0,150,0)
         self.walls.append(r6_wall)
         b6_wall = self.loader.loadModel("models/box")
         b6_wall.reparentTo(render)
         b6_wall.setScale(10,0.2,1.5)
-        b6_wall.setPos(-10,170,0)
+        b6_wall.setPos(-10,175,0)
         self.walls.append(b6_wall)
         b7_wall = self.loader.loadModel("models/box")
         b7_wall.reparentTo(render)
         b7_wall.setScale(10,0.2,1.5)
-        b7_wall.setPos(-10,170,2.5)
+        b7_wall.setPos(-10,175,2.5)
+        b8_wall = self.loader.loadModel("models/box")
+        b8_wall.reparentTo(render)
+        b8_wall.setScale(10,0.2,4)
+        b8_wall.setPos(-10,169,0)
+        self.walls.append(b8_wall)
 
 
         tex = self.loader.loadTexture("texture_mur.png")
@@ -322,6 +331,7 @@ class TacticalFPS(ShowBase):
         r6_wall.setTexture(tex, 1)
         b6_wall.setTexture(tex, 1)
         b7_wall.setTexture(tex, 1)
+        b8_wall.hide()
 
 
         texsol = self.loader.loadTexture("texture_sol.png")
@@ -332,6 +342,7 @@ class TacticalFPS(ShowBase):
         floor4.setTexture(texsol, 1)
         floor5.setTexture(texsol, 1)
         floor6.setTexture(texsol, 1)
+        interieur.setTexture(texsol, 1)
 
 
         textoit = self.loader.loadTexture("texture_toit.png")
@@ -352,7 +363,8 @@ class TacticalFPS(ShowBase):
         positions = [
             (5, 110, 1),
             (3, 120, 1),
-            (7, 120, 1)]
+            (7, 120, 1),
+            (-5,169.5,1)]
         for pos in positions:
 
             enemy = render.attachNewNode("enemy")
@@ -681,7 +693,7 @@ class TacticalFPS(ShowBase):
             distance = direction.length()
 
 # L'ennemi ne s'active qu'à moins de 60 mètres
-            if distance <= 60:
+            if distance <= 100:
 
     # Il s'arrête à 10 mètres du joueur
                 if distance >= 20:
@@ -844,7 +856,7 @@ class TacticalFPS(ShowBase):
             self.on_ground = False
 
             self.air_speed_bonus += 2
-            #self.air_speed_bonus = min(self.air_speed_bonus, 12)
+            self.air_speed_bonus = min(self.air_speed_bonus, 12)
     def increase_sensitivity(self):
         self.mouse_sensitivity += 0.01
         self.show_message(f"Sensibilité souris: {self.mouse_sensitivity:.2f}", 1)
