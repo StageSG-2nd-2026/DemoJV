@@ -704,7 +704,7 @@ class TacticalFPS(ShowBase):
                         f"enemy_beam_{id(beam)}"
                         )
 
-                        self.player_hp -= 10
+                        self.player_hp -= 5
 
                         self.show_message(
                         f"-10 HP ({self.player_hp})",
