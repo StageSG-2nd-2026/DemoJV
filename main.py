@@ -751,7 +751,7 @@ class TacticalFPS(ShowBase):
                         0.5
                         )
 
-                        self.enemy_shot_timer = 3
+                        self.enemy_shot_timer = 2
 
 
 
