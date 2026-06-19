@@ -451,13 +451,24 @@ class TacticalFPS(ShowBase):
                 best_enemy = enemy
                 best_hit = "body"
 
+        if best_enemy is None:
+            return
+
+        enemy_pos = best_enemy["node"].getPos()
+
+        distance = (enemy_pos - origin).length()
+
+# précision variable selon la distance
+        body_threshold = min(0.995, 0.97 + distance * 0.0002)
+        head_threshold = min(0.9999, 0.995 + distance * 0.00005)
+
         if best_enemy:
 
-            if best_hit == "head" and best_dot > 0.999:
+            if best_hit == "head" and best_dot > head_threshold:
                 best_enemy["hp"] -= 100
                 self.show_message("HEADSHOT !", 1)
 
-            elif best_hit == "body" and best_dot > 0.99:
+            elif best_hit == "body" and best_dot > body_threshold:
                 best_enemy["hp"] -= 40
                 self.show_message("Touché !", 0.8)
 
