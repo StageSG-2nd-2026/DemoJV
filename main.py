@@ -50,9 +50,12 @@ class TacticalFPS(ShowBase):
         return False
 
     def __init__(self):
-
+        self.mouse_sensitivity = 0.15
+        self.accept("p", self.increase_sensitivity)
+        self.accept("m", self.decrease_sensitivity)
+        self.air_speed_bonus = 0
         self.shooting = False
-        self.fire_rate = 0.15      # 80 ms entre les balles (~750 RPM)
+        self.fire_rate = 0.08      # 80 ms entre les balles (~750 RPM)
         self.fire_timer = 0
         self.accept("space", self.jump)
         self.mouse_locked = True
@@ -497,10 +500,8 @@ class TacticalFPS(ShowBase):
             dx = x - center_x
             dy = y - center_y
 
-            sensitivity = 0.15
-
-            self.heading -= dx * sensitivity
-            self.pitch -= dy * sensitivity
+            self.heading -= dx * self.mouse_sensitivity
+            self.pitch -= dy * self.mouse_sensitivity
 
             self.pitch = max(-85, min(85, self.pitch))
 
@@ -523,7 +524,7 @@ class TacticalFPS(ShowBase):
 
             self.fire_timer = self.fire_rate
 
-        speed = 20
+        speed = 20 + self.air_speed_bonus
 
         forward = self.camera.getQuat().getForward()
         right = self.camera.getQuat().getRight()
@@ -596,6 +597,8 @@ class TacticalFPS(ShowBase):
         if new_z <= ground_height:
             new_z = ground_height
             self.vertical_velocity = 0
+            if not self.on_ground:
+                self.air_speed_bonus *= 0.9
             self.on_ground = True
 
         if self.player_hp<=0:
@@ -761,6 +764,15 @@ class TacticalFPS(ShowBase):
         if self.on_ground:
             self.vertical_velocity = self.jump_force
             self.on_ground = False
+
+            self.air_speed_bonus += 2
+            #self.air_speed_bonus = min(self.air_speed_bonus, 12)
+    def increase_sensitivity(self):
+        self.mouse_sensitivity += 0.01
+        self.show_message(f"Sensibilité souris: {self.mouse_sensitivity:.2f}", 1)
+    def decrease_sensitivity(self):
+        self.mouse_sensitivity -= max(0.01, self.mouse_sensitivity - 0.01)
+        self.show_message(f"Sensibilité souris: {self.mouse_sensitivity:.2f}", 1)
     def start_shooting(self):
         self.shooting = True
 
