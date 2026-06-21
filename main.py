@@ -1,5 +1,3 @@
-from platform import node
-
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import WindowProperties
 from entities import Player, Enemy
@@ -82,7 +80,7 @@ class TacticalFPS(ShowBase):
         ]
         for sound in self.kill_sounds:
             sound.setVolume(10.0)
-        
+
 
         self.kill_index = 0
 
