@@ -7,6 +7,58 @@ import sys
 
 class TacticalFPS(ShowBase):
 
+
+    def has_line_of_sight(self, start, end):
+
+        direction = end - start
+        distance = direction.length()
+
+        if distance == 0:
+            return True
+
+        direction.normalize()
+
+        step = 0.5
+        current = start
+        travelled = 0
+
+        while travelled < distance:
+
+            for wall in self.walls:
+
+                # b8_wall laisse passer les balles
+                if wall in self.bullet_pass_walls:
+                    continue
+
+                bounds = wall.getTightBounds()
+
+                if bounds is None:
+                    continue
+
+                min_p, max_p = bounds
+
+                if (
+                    min_p.x <= current.x <= max_p.x
+                    and
+                    min_p.y <= current.y <= max_p.y
+                ):
+                    return False
+
+            current += direction * step
+            travelled += step
+
+        return True
+
+        while travelled < distance:
+
+                if self.collides_with_wall(current):
+                    return False
+
+                current += direction * step
+                travelled += step
+
+        return True
+
     def show_message(self, message, duration=1.0):
 
         self.message_text.setText(message)
@@ -68,7 +120,7 @@ class TacticalFPS(ShowBase):
         self.enemy_shot_timer = 0
 
         ShowBase.__init__(self)
-        self.crouching = False 
+        self.crouching = False
         self.accept("c", self.start_crouch)
         self.accept("c-up", self.stop_crouch)
         self.kill_sounds = [
@@ -329,6 +381,8 @@ class TacticalFPS(ShowBase):
         end.reparentTo(render)
         end.setScale(0.2,10,6)
         end.setPos(50,190,0)
+        self.bullet_pass_walls = []
+        self.bullet_pass_walls.append(b8_wall)
 
         self.skybox = self.loader.loadModel("models/box")
         self.skybox.reparentTo(render)
@@ -588,25 +642,32 @@ class TacticalFPS(ShowBase):
 
         if best_enemy:
 
-            if best_hit == "head" and best_dot > head_threshold:
-                best_enemy["hp"] -= 100
-                self.show_message("HEADSHOT !", 1)
+            enemy_pos = best_enemy["node"].getPos()
 
-            elif best_hit == "body" and best_dot > body_threshold:
-                best_enemy["hp"] -= 40
-                self.show_message("Touché !", 0.8)
+            if self.has_line_of_sight(
+                self.camera.getPos(),
+                enemy_pos
+            ):
 
-            if best_enemy["hp"] <= 0:
-                best_enemy["node"].removeNode()
-                self.enemies.remove(best_enemy)
-                self.kill_sounds[self.kill_index].play()
-                self.kill_index += 1
-                if self.kill_index >= len(self.kill_sounds):
-                    self.kill_index = 0
-                self.player.score += 100
-                self.show_message("ENNEMI TUÉ +100", 1.5)
-                from random import choice
-                choice(self.kill_sounds).play()
+                if best_hit == "head" and best_dot > head_threshold:
+
+                    best_enemy["hp"] -= 100
+                    self.show_message("HEADSHOT !", 1)
+
+                elif best_hit == "body" and best_dot > body_threshold:
+
+                    best_enemy["hp"] -= 40
+                    self.show_message("Touché !", 0.8)
+
+                if best_enemy["hp"] <= 0:
+
+                    best_enemy["node"].removeNode()
+                    self.enemies.remove(best_enemy)
+
+                    self.player.score += 100
+                    self.show_message("ENNEMI TUÉ +100", 1.5)
+                    from random import choice
+                    choice(self.kill_sounds).play()
 
 
     def update(self, task):
@@ -848,7 +909,10 @@ class TacticalFPS(ShowBase):
 
 
 
-            if distance <= 20:
+            if distance <= 25 and self.has_line_of_sight(
+                node.getPos(),
+                self.camera.getPos()
+            ):
 
                     if self.enemy_shot_timer <= 0:
                         from panda3d.core import LineSegs
