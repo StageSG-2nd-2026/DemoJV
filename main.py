@@ -325,6 +325,10 @@ class TacticalFPS(ShowBase):
         b8_wall.setScale(10,0.2,6)
         b8_wall.setPos(-10,169,0)
         self.walls.append(b8_wall)
+        end = self.loader.loadModel("models/box")
+        end.reparentTo(render)
+        end.setScale(0.2,10,6)
+        end.setPos(50,190,0)
 
         self.skybox = self.loader.loadModel("models/box")
         self.skybox.reparentTo(render)
@@ -386,6 +390,9 @@ class TacticalFPS(ShowBase):
         toit6.setTexture(textoit,1)
         interieurt.setTexture(textoit,1)
 
+        endtex = self.loader.loadTexture("end.png")
+        end.setTexture(endtex,1)
+
 
         import random
 
@@ -396,7 +403,11 @@ class TacticalFPS(ShowBase):
             (3, 120, 1),
             (7, 120, 1),
             (-5,169.5,1),
-            (-5, 180, 1)]
+            (-5, 180, 1),
+            (-45,145,1),
+            (-45,195,1),
+            (-1,190,1),
+            (50,195,1)]
         for pos in positions:
             enemy = render.attachNewNode("enemy")
             enemy.setPos(*pos)
@@ -869,9 +880,9 @@ class TacticalFPS(ShowBase):
 
 
 
-#
-        print(self.camera.getY())
-        if self.camera.getY() > 300:
+
+        print(self.camera.getX(),self.camera.getY())
+        if self.camera.getY() > 190 and self.camera.getX() >50:
             self.end_game()
 
 
