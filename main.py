@@ -698,8 +698,12 @@ class TacticalFPS(ShowBase):
 
                     self.player.score += 100
                     self.show_message("ENNEMI TUÉ +100", 1.5)
-                    from random import choice
-                    choice(self.kill_sounds).play()
+                    self.kill_sounds[self.kill_index].play()
+
+                    self.kill_index += 1
+
+                    if self.kill_index >= len(self.kill_sounds):
+                        self.kill_index = 0
 
 
     def update(self, task):
