@@ -120,6 +120,29 @@ class TacticalFPS(ShowBase):
         self.enemy_shot_timer = 0
 
         ShowBase.__init__(self)
+
+        from panda3d.core import DisplayRegion
+
+        # Caméra de minimap
+        self.minimap_cam = self.makeCamera(self.win)
+
+        # Coin supérieur droit
+        dr = self.minimap_cam.node().getDisplayRegion(0)
+        dr.setDimensions(0.75, 1.0, 0.75, 1.0)
+
+        self.minimap_cam.reparentTo(render)
+
+        # Vue de dessus
+        self.minimap_cam.setPos(0, 0, 100)
+        self.minimap_cam.setP(-90)
+
+        from panda3d.core import OrthographicLens
+
+        lens = OrthographicLens()
+        lens.setFilmSize(80, 80)
+
+        self.minimap_cam.node().setLens(lens)
+
         self.crouching = False
         self.accept("c", self.start_crouch)
         self.accept("c-up", self.stop_crouch)
@@ -397,6 +420,12 @@ class TacticalFPS(ShowBase):
         sky = self.loader.loadTexture("skybox.png")
         self.skybox.setTexture(sky,1)
 
+        self.playerc = self.loader.loadModel("models/box")
+        self.playerc.reparentTo(render)
+        self.playerc.setScale(3)
+        self.playerc.setPos(0,0,11)
+        self.playerc.setColor(0,255,0,1)
+
 
 
 
@@ -669,12 +698,8 @@ class TacticalFPS(ShowBase):
 
                     self.player.score += 100
                     self.show_message("ENNEMI TUÉ +100", 1.5)
-                    self.kill_sounds[self.kill_index].play()
-
-                    self.kill_index += 1
-
-                    if self.kill_index >= len(self.kill_sounds):
-                        self.kill_index = 0
+                    from random import choice
+                    choice(self.kill_sounds).play()
 
 
     def update(self, task):
@@ -820,13 +845,14 @@ class TacticalFPS(ShowBase):
             print(f"Game Over! Score: {final_score}, Rank: {rank}")
             OnscreenText(text="GAME OVER",pos=(0,0),scale=0.2,fg=(1,0,0,1),align=TextNode.ACenter)
             self.taskMgr.doMethodLater(
-            3.0,           # attendre 3 secondes
+            1.0,           # attendre 3 secondes
             self.quit_game,
             "quit_game"
             )
 
 
         self.camera.setZ(new_z)
+        self.playerc.setPos(camera.getX()-1,camera.getY()-1,11)
 #
         # IA ennemi simple
         import random
@@ -971,6 +997,14 @@ class TacticalFPS(ShowBase):
         print(self.camera.getX(),self.camera.getY())
         if self.camera.getY() > 190 and self.camera.getX() >50:
             self.end_game()
+        player_pos = self.camera.getPos()
+
+        self.minimap_cam.setPos(
+         player_pos.getX(),
+         player_pos.getY(),
+         100
+        )
+        self.minimap_cam.setH(0)
 
 
         return task.cont
