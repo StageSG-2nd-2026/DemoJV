@@ -187,128 +187,128 @@ class TacticalFPS(ShowBase):
         toit = self.loader.loadModel("models/box")
         toit.reparentTo(render)
         toit.setScale(10, 110, 0.2)
-        toit.setPos(0, 40, 4)
+        toit.setPos(0, 40, 6)
         toit2 = self.loader.loadModel("models/box")
         toit2.reparentTo(render)
         toit2.setScale(50, 10, 0.2)
-        toit2.setPos(-50, 140, 4)
+        toit2.setPos(-50, 140, 6)
         toit3 = self.loader.loadModel("models/box")
         toit3.reparentTo(render)
         toit3.setScale(10, 50, 0.2)
-        toit3.setPos(-50, 150, 4)
+        toit3.setPos(-50, 150, 6)
         toit4 = self.loader.loadModel("models/box")
         toit4.reparentTo(render)
         toit4.setScale(30, 20, 0.2)
-        toit4.setPos(-10, 20, 8)
+        toit4.setPos(-10, 20, 10)
         toit5 = self.loader.loadModel("models/box")
         toit5.reparentTo(render)
         toit5.setScale(90,10,0.2)
-        toit5.setPos(-40,190,4)
+        toit5.setPos(-40,190,6)
         toit6 = self.loader.loadModel("models/box")
         toit6.reparentTo(render)
         toit6.setScale(10,40,0.2)
-        toit6.setPos(-10,150,4)
+        toit6.setPos(-10,150,6)
         interieurt = self.loader.loadModel("models/box")
         interieurt.reparentTo(render)
         interieurt.setScale(30, 40, 0.2)
-        interieurt.setPos(-40, 150, 4)
+        interieurt.setPos(-40, 150, 6)
 
     # Mur gauche
         left_wall = self.loader.loadModel("models/box")
         left_wall.reparentTo(render)
-        left_wall.setScale(0.2, 100, 4)
+        left_wall.setScale(0.2, 100, 6)
         left_wall.setPos(0, 40,0)
         self.walls.append(left_wall)
 
     # Mur droit
         right_wall = self.loader.loadModel("models/box")
         right_wall.reparentTo(render)
-        right_wall.setScale(0.2, 110, 4)
+        right_wall.setScale(0.2, 110, 6)
         right_wall.setPos(10, 40, 0)
         self.walls.append(right_wall)
 
     # Mur du droit 2
         r2_wall = self.loader.loadModel("models/box")
         r2_wall.reparentTo(render)
-        r2_wall.setScale(50, 0.2, 4)
+        r2_wall.setScale(50, 0.2, 6)
         r2_wall.setPos(-40, 150, 0)
         self.walls.append(r2_wall)
     # Mur de gaucke 2
         l2_wall = self.loader.loadModel("models/box")
         l2_wall.reparentTo(render)
-        l2_wall.setScale(50, 0.2, 4)
+        l2_wall.setScale(50, 0.2, 6)
         l2_wall.setPos(-50, 140, 0)
         self.walls.append(l2_wall)
     # Mur de gauche 3
         l3_wall = self.loader.loadModel("models/box")
         l3_wall.reparentTo(render)
-        l3_wall.setScale(0.2, 60, 4)
+        l3_wall.setScale(0.2, 60, 6)
         l3_wall.setPos(-50, 140, 0)
         self.walls.append(l3_wall)
     # Mur de droite 3
         r3_wall = self.loader.loadModel("models/box")
         r3_wall.reparentTo(render)
-        r3_wall.setScale(0.2, 40, 4)
+        r3_wall.setScale(0.2, 40, 6)
         r3_wall.setPos(-40, 150, 0)
         self.walls.append(r3_wall)
     # Mur de gauche debut
         r4_wall = self.loader.loadModel("models/box")
         r4_wall.reparentTo(render)
-        r4_wall.setScale(0.2,20,8)
+        r4_wall.setScale(0.2,20,10)
         r4_wall.setPos(-10,20,0)
         self.walls.append(r4_wall)
     # Mur de droite debut
         l4_wall = self.loader.loadModel("models/box")
         l4_wall.reparentTo(render)
-        l4_wall.setScale(0.2,20,8)
+        l4_wall.setScale(0.2,20,10)
         l4_wall.setPos(20,20,0)
         self.walls.append(l4_wall)
     # Mur de fond
         f_wall = self.loader.loadModel("models/box")
         f_wall.reparentTo(render)
-        f_wall.setScale(30,0.2,8)
+        f_wall.setScale(30,0.2,10)
         f_wall.setPos(-10,20,0)
         self.walls.append(f_wall)
         f1_wall = self.loader.loadModel("models/box")
         f1_wall.reparentTo(render)
-        f1_wall.setScale(10,0.2,8)
+        f1_wall.setScale(10,0.2,10)
         f1_wall.setPos(-10,40,0)
         self.walls.append(f1_wall)
         f2_wall = self.loader.loadModel("models/box")
         f2_wall.reparentTo(render)
-        f2_wall.setScale(10,0.2,8)
+        f2_wall.setScale(10,0.2,10)
         f2_wall.setPos(10,40,0)
         self.walls.append(f2_wall)
         f0_wall = self.loader.loadModel("models/box")
         f0_wall.reparentTo(render)
         f0_wall.setScale(10,0.2,4)
-        f0_wall.setPos(0,40,4)
+        f0_wall.setPos(0,40,6)
         #pas de collision
         #mur gauche5
         l5_wall = self.loader.loadModel("models/box")
         l5_wall.reparentTo(render)
-        l5_wall.setScale(100,0.2,4)
+        l5_wall.setScale(100,0.2,6)
         l5_wall.setPos(-50,200,0)
         self.walls.append(l5_wall)
         #mur droite5
         r5_wall = self.loader.loadModel("models/box")
         r5_wall.reparentTo(render)
-        r5_wall.setScale(30,0.2,4)
+        r5_wall.setScale(30,0.2,6)
         r5_wall.setPos(-40,190,0)
         self.walls.append(r5_wall)
         r5b_wall = self.loader.loadModel("models/box")
         r5b_wall.reparentTo(render)
-        r5b_wall.setScale(50,0.2,4)
+        r5b_wall.setScale(50,0.2,6)
         r5b_wall.setPos(0,190,0)
         self.walls.append(r5b_wall)
         l6_wall = self.loader.loadModel("models/box")
         l6_wall.reparentTo(render)
-        l6_wall.setScale(0.2,40,4)
+        l6_wall.setScale(0.2,40,6)
         l6_wall.setPos(-10,150,0)
         self.walls.append(l6_wall)
         r6_wall = self.loader.loadModel("models/box")
         r6_wall.reparentTo(render)
-        r6_wall.setScale(0.2,45,4)
+        r6_wall.setScale(0.2,45,6)
         r6_wall.setPos(0,150,0)
         self.walls.append(r6_wall)
         b6_wall = self.loader.loadModel("models/box")
@@ -319,10 +319,10 @@ class TacticalFPS(ShowBase):
         b7_wall = self.loader.loadModel("models/box")
         b7_wall.reparentTo(render)
         b7_wall.setScale(10,0.2,1.5)
-        b7_wall.setPos(-10,175,2.5)
+        b7_wall.setPos(-10,175,4.5)
         b8_wall = self.loader.loadModel("models/box")
         b8_wall.reparentTo(render)
-        b8_wall.setScale(10,0.2,4)
+        b8_wall.setScale(10,0.2,6)
         b8_wall.setPos(-10,169,0)
         self.walls.append(b8_wall)
 
@@ -398,7 +398,6 @@ class TacticalFPS(ShowBase):
             (-5,169.5,1),
             (-5, 180, 1)]
         for pos in positions:
-
             enemy = render.attachNewNode("enemy")
             enemy.setPos(*pos)
 
@@ -413,15 +412,40 @@ class TacticalFPS(ShowBase):
             head.setPos(0, 0, 1.8)
             head.setColor(1, 0.8, 0.8, 1)
 
-            self.enemies.append({
-            "node": enemy,
-            "body": body,
-            "head": head,
-            "hp": 150,
-            "velocity_z": 0,
-            "jump_timer": random.uniform(0.5, 1.5)
-            })
+            # ======================
+            # Barre de vie
+            # ======================
 
+            hp_node = enemy.attachNewNode("hp_node")
+            hp_node.setPos(0, 0, 2.8)
+
+            from panda3d.core import BillboardEffect
+            hp_node.setEffect(
+                BillboardEffect.makePointEye()
+            )
+
+            hp_bg = self.loader.loadModel("models/box")
+            hp_bg.reparentTo(hp_node)
+            hp_bg.setScale(1.2, 0.05, 0.08)
+            hp_bg.setColor(0, 0, 0, 1)
+            hp_bg.hide()
+
+            hp_fill = self.loader.loadModel("models/box")
+            hp_fill.reparentTo(hp_node)
+            hp_fill.setScale(1.0, 0.04, 0.06)
+            hp_fill.setColor(0, 1, 0, 1)
+
+
+            self.enemies.append({
+                "node": enemy,
+                "body": body,
+                "head": head,
+                "hp_fill": hp_fill,
+                "hp": 150,
+                "max_hp": 150,
+                "velocity_z": 0,
+                "jump_timer": random.uniform(0.5, 1.5),
+            })
 
         #self.finish = finish
 
@@ -729,6 +753,25 @@ class TacticalFPS(ShowBase):
         import random
 
         for enemy in self.enemies:
+            ratio = enemy["hp"] / enemy["max_hp"]
+
+            enemy["hp_fill"].setScale(
+            max(0.01, ratio),
+            0.04,
+            0.06
+            )
+
+            enemy["hp_fill"].setX(
+            -(1 - ratio) / 2
+            )
+            if ratio > 0.6:
+                enemy["hp_fill"].setColor(0, 1, 0, 1)
+
+            elif ratio > 0.3:
+                enemy["hp_fill"].setColor(1, 0.7, 0, 1)
+
+            else:
+                enemy["hp_fill"].setColor(1, 0, 0, 1)
 
             node = enemy["node"]
 
