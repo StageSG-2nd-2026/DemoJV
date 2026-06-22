@@ -909,38 +909,54 @@ class TacticalFPS(ShowBase):
 
 
 
-            if distance <= 25 and self.has_line_of_sight(
-                node.getPos(),
-                self.camera.getPos()
-            ):
+            if distance <= 25 and self.has_line_of_sight(node.getPos(),self.camera.getPos()):
 
-                    if self.enemy_shot_timer <= 0:
-                        from panda3d.core import LineSegs
+                if self.enemy_shot_timer <= 0:
 
-                        line = LineSegs()
-                        line.setColor(1, 0, 0)
-                        line.setThickness(2)
-                        line.moveTo(node.getPos())
-                        line.drawTo(self.camera.getPos())
+                    import random
+                    import math
 
-                        beam = render.attachNewNode(line.create())
-                        bang = loader.loadSfx("tire.mp3")
-                        bang.play()
+                    # Direction réelle vers le joueur
+                    shoot_dir = self.camera.getPos() - node.getPos()
+                    shoot_dir.setZ(0)
+                    shoot_dir.normalize()
 
-                        self.taskMgr.doMethodLater(
-                         0.05,
-                        lambda task, b=beam: (b.removeNode(), task.done)[1],
-                        f"enemy_beam_{id(beam)}"
-                        )
+                    # Erreur aléatoire entre -10° et +10°
+                    angle_error = random.uniform(-10, 10)
+
+                    heading = math.degrees(
+                        math.atan2(shoot_dir.getX(), shoot_dir.getY())
+                    )
+
+                    heading += angle_error
+
+                    # Nouvelle direction de tir
+                    shot_x = math.sin(math.radians(heading))
+                    shot_y = math.cos(math.radians(heading))
+
+                    shot_dir = (shot_x, shot_y)
+
+                    # Direction parfaite vers le joueur
+                    player_x = shoot_dir.getX()
+                    player_y = shoot_dir.getY()
+
+                    # Produit scalaire
+                    dot = (
+                        shot_x * player_x +
+                        shot_y * player_y
+                    )
+
+                    # Le joueur est touché seulement si le tir passe assez près
+                    if dot > 0.98:
 
                         self.player_hp -= 5
 
                         self.show_message(
-                        f"-10 HP ({self.player_hp})",
-                        0.5
+                            f"-10 HP ({self.player_hp})",
+                            0.5
                         )
 
-                        self.enemy_shot_timer = 2
+                    self.enemy_shot_timer = 2
 
 
 
