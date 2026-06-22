@@ -124,14 +124,14 @@ class TacticalFPS(ShowBase):
         self.accept("c", self.start_crouch)
         self.accept("c-up", self.stop_crouch)
         self.kill_sounds = [
-            self.loader.loadSfx("killsound1.mp3"),
-            self.loader.loadSfx("killsound2.mp3"),
-            self.loader.loadSfx("killsound3.mp3"),
-            self.loader.loadSfx("killsound4.mp3"),
-            self.loader.loadSfx("killsound5.mp3")
+            self.loader.loadSfx("killsound1.wav"),
+            self.loader.loadSfx("killsound2.wav"),
+            self.loader.loadSfx("killsound3.wav"),
+            self.loader.loadSfx("killsound4.wav"),
+            self.loader.loadSfx("killsound5.wav")
         ]
         for sound in self.kill_sounds:
-            sound.setVolume(10.0)
+            sound.setVolume(1.0)
 
 
         self.kill_index = 0
