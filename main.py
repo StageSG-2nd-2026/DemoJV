@@ -381,8 +381,11 @@ class TacticalFPS(ShowBase):
         end.reparentTo(render)
         end.setScale(0.2,10,6)
         end.setPos(50,190,0)
+        end.setLightOff()
         self.bullet_pass_walls = []
         self.bullet_pass_walls.append(b8_wall)
+        self.bullet_pass_walls.append(b7_wall)
+        self.bullet_pass_walls.append(b6_wall)
 
         self.skybox = self.loader.loadModel("models/box")
         self.skybox.reparentTo(render)
@@ -984,6 +987,7 @@ class TacticalFPS(ShowBase):
             self.player,
             total_time
         )
+        print(total_time)
 
         rank = self.score_manager.get_rank(final_score)
 
