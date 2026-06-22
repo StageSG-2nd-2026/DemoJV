@@ -75,7 +75,7 @@ class TacticalFPS(ShowBase):
 
     def collides_with_wall(self, pos):
 
-        player_radius = 0.5
+        player_radius = 1
 
         for wall in self.walls:
 
