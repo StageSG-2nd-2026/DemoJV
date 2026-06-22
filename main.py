@@ -70,7 +70,7 @@ class TacticalFPS(ShowBase):
         self.enemy_shot_timer = 0
 
         ShowBase.__init__(self)
-        self.crouching = False
+        self.crouching = False 
         self.accept("c", self.start_crouch)
         self.accept("c-up", self.stop_crouch)
         self.kill_sounds = [
