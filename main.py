@@ -7,6 +7,58 @@ import sys
 
 class TacticalFPS(ShowBase):
 
+
+    def has_line_of_sight(self, start, end):
+
+        direction = end - start
+        distance = direction.length()
+
+        if distance == 0:
+            return True
+
+        direction.normalize()
+
+        step = 0.5
+        current = start
+        travelled = 0
+
+        while travelled < distance:
+
+            for wall in self.walls:
+
+                # b8_wall laisse passer les balles
+                if wall in self.bullet_pass_walls:
+                    continue
+
+                bounds = wall.getTightBounds()
+
+                if bounds is None:
+                    continue
+
+                min_p, max_p = bounds
+
+                if (
+                    min_p.x <= current.x <= max_p.x
+                    and
+                    min_p.y <= current.y <= max_p.y
+                ):
+                    return False
+
+            current += direction * step
+            travelled += step
+
+        return True
+
+        while travelled < distance:
+
+                if self.collides_with_wall(current):
+                    return False
+
+                current += direction * step
+                travelled += step
+
+        return True
+
     def show_message(self, message, duration=1.0):
 
         self.message_text.setText(message)
@@ -23,7 +75,7 @@ class TacticalFPS(ShowBase):
 
     def collides_with_wall(self, pos):
 
-        player_radius = 0.5
+        player_radius = 1
 
         for wall in self.walls:
 
@@ -68,7 +120,7 @@ class TacticalFPS(ShowBase):
         self.enemy_shot_timer = 0
 
         ShowBase.__init__(self)
-        self.crouching = False 
+        self.crouching = False
         self.accept("c", self.start_crouch)
         self.accept("c-up", self.stop_crouch)
         self.kill_sounds = [
@@ -329,6 +381,11 @@ class TacticalFPS(ShowBase):
         end.reparentTo(render)
         end.setScale(0.2,10,6)
         end.setPos(50,190,0)
+        end.setLightOff()
+        self.bullet_pass_walls = []
+        self.bullet_pass_walls.append(b8_wall)
+        self.bullet_pass_walls.append(b7_wall)
+        self.bullet_pass_walls.append(b6_wall)
 
         self.skybox = self.loader.loadModel("models/box")
         self.skybox.reparentTo(render)
@@ -588,23 +645,32 @@ class TacticalFPS(ShowBase):
 
         if best_enemy:
 
-            if best_hit == "head" and best_dot > head_threshold:
-                best_enemy["hp"] -= 100
-                self.show_message("HEADSHOT !", 1)
+            enemy_pos = best_enemy["node"].getPos()
 
-            elif best_hit == "body" and best_dot > body_threshold:
-                best_enemy["hp"] -= 40
-                self.show_message("Touché !", 0.8)
+            if self.has_line_of_sight(
+                self.camera.getPos(),
+                enemy_pos
+            ):
 
-            if best_enemy["hp"] <= 0:
-                best_enemy["node"].removeNode()
-                self.enemies.remove(best_enemy)
-                self.kill_sounds[self.kill_index].play()
-                self.kill_index += 1
-                if self.kill_index >= len(self.kill_sounds):
-                    self.kill_index = 0
-                self.player.score += 100
-                self.show_message("ENNEMI TUÉ +100", 1.5)
+                if best_hit == "head" and best_dot > head_threshold:
+
+                    best_enemy["hp"] -= 100
+                    self.show_message("HEADSHOT !", 1)
+
+                elif best_hit == "body" and best_dot > body_threshold:
+
+                    best_enemy["hp"] -= 40
+                    self.show_message("Touché !", 0.8)
+
+                if best_enemy["hp"] <= 0:
+
+                    best_enemy["node"].removeNode()
+                    self.enemies.remove(best_enemy)
+
+                    self.player.score += 100
+                    self.show_message("ENNEMI TUÉ +100", 1.5)
+                    from random import choice
+                    choice(self.kill_sounds).play()
 
 
     def update(self, task):
@@ -846,35 +912,54 @@ class TacticalFPS(ShowBase):
 
 
 
-            if distance <= 20:
+            if distance <= 25 and self.has_line_of_sight(node.getPos(),self.camera.getPos()):
 
-                    if self.enemy_shot_timer <= 0:
-                        from panda3d.core import LineSegs
+                if self.enemy_shot_timer <= 0:
 
-                        line = LineSegs()
-                        line.setColor(1, 0, 0)
-                        line.setThickness(2)
-                        line.moveTo(node.getPos())
-                        line.drawTo(self.camera.getPos())
+                    import random
+                    import math
 
-                        beam = render.attachNewNode(line.create())
-                        bang = loader.loadSfx("tire.mp3")
-                        bang.play()
+                    # Direction réelle vers le joueur
+                    shoot_dir = self.camera.getPos() - node.getPos()
+                    shoot_dir.setZ(0)
+                    shoot_dir.normalize()
 
-                        self.taskMgr.doMethodLater(
-                         0.05,
-                        lambda task, b=beam: (b.removeNode(), task.done)[1],
-                        f"enemy_beam_{id(beam)}"
-                        )
+                    # Erreur aléatoire entre -10° et +10°
+                    angle_error = random.uniform(-10, 10)
+
+                    heading = math.degrees(
+                        math.atan2(shoot_dir.getX(), shoot_dir.getY())
+                    )
+
+                    heading += angle_error
+
+                    # Nouvelle direction de tir
+                    shot_x = math.sin(math.radians(heading))
+                    shot_y = math.cos(math.radians(heading))
+
+                    shot_dir = (shot_x, shot_y)
+
+                    # Direction parfaite vers le joueur
+                    player_x = shoot_dir.getX()
+                    player_y = shoot_dir.getY()
+
+                    # Produit scalaire
+                    dot = (
+                        shot_x * player_x +
+                        shot_y * player_y
+                    )
+
+                    # Le joueur est touché seulement si le tir passe assez près
+                    if dot > 0.98:
 
                         self.player_hp -= 5
 
                         self.show_message(
-                        f"-10 HP ({self.player_hp})",
-                        0.5
+                            f"-10 HP ({self.player_hp})",
+                            0.5
                         )
 
-                        self.enemy_shot_timer = 2
+                    self.enemy_shot_timer = 2
 
 
 
@@ -902,6 +987,7 @@ class TacticalFPS(ShowBase):
             self.player,
             total_time
         )
+        print(total_time)
 
         rank = self.score_manager.get_rank(final_score)
 
