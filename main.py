@@ -44,6 +44,13 @@ class TacticalFPS(ShowBase):
             scale=0.15,
             fg=(1, 1, 1, 1)
         )
+        DirectButton(
+            text="PARAMETRES",
+            scale=0.08,
+            pos=(0, 0, -0.45),
+            parent=self.start_frame,
+            command=self.show_settings
+        )
 
         OnscreenText(
             text="Eliminez tous les ennemis puis atteignez la sortie",
@@ -240,7 +247,7 @@ class TacticalFPS(ShowBase):
         self.paused = False
         self.pause_frame = None
 
-        self.accept("p", self.toggle_pause)
+        self.accept("i", self.toggle_pause)
 
         ShowBase.__init__(self)
         try:
@@ -325,6 +332,45 @@ class TacticalFPS(ShowBase):
 
     def set_key(self, key, value):
         self.keys[key] = value
+    def apply_settings(self):
+
+        self.mouse_sensitivity = self.sens_slider["value"]
+
+        self.settings_frame.destroy()
+    def show_settings(self):
+
+        from direct.gui.DirectGui import DirectFrame
+        from direct.gui.DirectGui import DirectButton
+        from direct.gui.DirectGui import DirectSlider
+        from direct.gui.OnscreenText import OnscreenText
+
+        self.settings_frame = DirectFrame(
+            frameColor=(0,0,0,0.9),
+            frameSize=(-1,1,-1,1)
+        )
+
+        OnscreenText(
+            text="Sensibilite souris",
+            parent=self.settings_frame,
+            pos=(0,0.3),
+            scale=0.08
+        )
+
+        self.sens_slider = DirectSlider(
+            parent=self.settings_frame,
+            range=(0.05,0.5),
+            value=self.mouse_sensitivity,
+            scale=0.5,
+            pos=(0,0,0)
+        )
+
+        DirectButton(
+            text="Valider",
+            parent=self.settings_frame,
+            scale=0.07,
+            pos=(0,0,-0.3),
+            command=self.apply_settings
+        )
 
     def setup_level(self):
 
@@ -936,8 +982,9 @@ class TacticalFPS(ShowBase):
     def update(self, task):
         if not self.game_started:
             return task.cont
-        else:
+        if hasattr(self, "best_score_text"):
             self.best_score_text.destroy()
+            del self.best_score_text
         if self.paused:
          return task.cont
 
