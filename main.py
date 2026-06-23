@@ -631,31 +631,28 @@ class TacticalFPS(ShowBase):
         end = self.loader.loadModel("models/box")
         end.reparentTo(render)
         end.setScale(0.2,10,6)
-        end.setPos(50,190,0)
+        end.setPos(80,190,0)
         end.setLightOff()
         self.bullet_pass_walls = []
         self.bullet_pass_walls.append(b8_wall)
         self.bullet_pass_walls.append(b7_wall)
         self.bullet_pass_walls.append(b6_wall)
 
-        end1 = self.loader.loadModel("models/box")
-        end1.reparentTo(render)
-        end1.setScale(10,0.2,6)
-        end1.setPos(50,190,0)
-        self.walls.append(end1)
-        end1.hide()
-        end2 = self.loader.loadModel("models/box")
-        end2.reparentTo(render)
-        end2.setScale(10,0.2,6)
-        end2.setPos(50,200,0)
-        self.walls.append(end2)
-        end2.hide()
-        end3 = self.loader.loadModel("models/box")
-        end3.reparentTo(render)
-        end3.setScale(0.2,10,6)
-        end3.setPos(60,190,0)
-        self.walls.append(end3)
-        end3.hide()
+
+        sb = self.loader.loadModel("models/box")
+        sb.reparentTo(render)
+        sb.setScale(0.2,20,6)
+        sb.setPos(50,170,0)
+        self.walls.append(sb)
+        sb1 = self.loader.loadModel("models/box")
+        sb1.reparentTo(render)
+        sb1.setScale(0.2,20,6)
+        sb1.setPos(50,200,0)
+        self.walls.append(sb1)
+
+
+
+
 
         self.skybox = self.loader.loadModel("models/box")
         self.skybox.reparentTo(render)
@@ -1367,7 +1364,7 @@ class TacticalFPS(ShowBase):
 
 
         print(self.camera.getX(),self.camera.getY())
-        if self.camera.getY() > 190 and self.camera.getX() >50:
+        if self.camera.getY() > 190 and self.camera.getX() >80:
             self.end_game()
         player_pos = self.camera.getPos()
 
