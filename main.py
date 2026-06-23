@@ -631,7 +631,7 @@ class TacticalFPS(ShowBase):
         end = self.loader.loadModel("models/box")
         end.reparentTo(render)
         end.setScale(0.2,10,6)
-        end.setPos(80,190,0)
+        end.setPos(100,190,0)
         end.setLightOff()
         self.bullet_pass_walls = []
         self.bullet_pass_walls.append(b8_wall)
@@ -641,14 +641,42 @@ class TacticalFPS(ShowBase):
 
         sb = self.loader.loadModel("models/box")
         sb.reparentTo(render)
-        sb.setScale(0.2,20,6)
+        sb.setScale(0.2,20,10)
         sb.setPos(50,170,0)
         self.walls.append(sb)
         sb1 = self.loader.loadModel("models/box")
         sb1.reparentTo(render)
-        sb1.setScale(0.2,20,6)
+        sb1.setScale(0.2,20,10)
         sb1.setPos(50,200,0)
         self.walls.append(sb1)
+        sb2 = self.loader.loadModel("models/box")
+        sb2.reparentTo(render)
+        sb2.setScale(50,0.2,10)
+        sb2.setPos(50,170,0)
+        self.walls.append(sb2)
+        sb3 = self.loader.loadModel("models/box")
+        sb3.reparentTo(render)
+        sb3.setScale(50,0.2,10)
+        sb3.setPos(50,220,0)
+        self.walls.append(sb3)
+        sb4 = self.loader.loadModel("models/box")
+        sb4.reparentTo(render)
+        sb4.setScale(0.2,20,10)
+        sb4.setPos(100,170,0)
+        self.walls.append(sb4)
+        sb5 = self.loader.loadModel("models/box")
+        sb5.reparentTo(render)
+        sb5.setScale(0.2,20,10)
+        sb5.setPos(100,200,0)
+        self.walls.append(sb5)
+        endr = self.loader.loadModel("models/box")
+        endr.reparentTo(render)
+        endr.setScale(0.2,10,4)
+        endr.setPos(100,190,6)
+        endrb = self.loader.loadModel("models/box")
+        endrb.reparentTo(render)
+        endrb.setScale(0.2,10,4)
+        endrb.setPos(50,190,6)
 
 
 
@@ -695,6 +723,14 @@ class TacticalFPS(ShowBase):
         r6_wall.setTexture(tex, 1)
         b6_wall.setTexture(tex, 1)
         b7_wall.setTexture(tex, 1)
+        sb.setTexture(tex, 1)
+        sb1.setTexture(tex, 1)
+        sb2.setTexture(tex, 1)
+        sb3.setTexture(tex, 1)
+        sb4.setTexture(tex, 1)
+        sb5.setTexture(tex, 1)
+        endr.setTexture(tex, 1)
+        endrb.setTexture(tex, 1)
         b8_wall.hide()
 
 
@@ -1364,7 +1400,7 @@ class TacticalFPS(ShowBase):
 
 
         print(self.camera.getX(),self.camera.getY())
-        if self.camera.getY() > 190 and self.camera.getX() >80:
+        if self.camera.getY() > 190 and self.camera.getX() >100:
             self.end_game()
         player_pos = self.camera.getPos()
 
