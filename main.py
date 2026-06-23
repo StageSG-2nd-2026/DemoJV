@@ -6,6 +6,53 @@ import sys
 
 
 class TacticalFPS(ShowBase):
+    def toggle_pause(self):
+
+        self.paused = not self.paused
+
+        if self.paused:
+
+            from direct.gui.DirectGui import DirectFrame, DirectButton
+
+            self.pause_frame = DirectFrame(
+                frameColor=(0, 0, 0, 0.7),
+                frameSize=(-0.5, 0.5, -0.4, 0.4)
+            )
+
+            DirectButton(
+                text="Reprendre",
+                scale=0.08,
+                pos=(0, 0, 0.1),
+                parent=self.pause_frame,
+                command=self.toggle_pause
+            )
+
+            DirectButton(
+                text="Quitter",
+                scale=0.08,
+                pos=(0, 0, -0.1),
+                parent=self.pause_frame,
+                command=sys.exit
+            )
+
+            props = WindowProperties()
+            props.setCursorHidden(False)
+            props.setMouseMode(WindowProperties.M_absolute)
+            self.win.requestProperties(props)
+
+        else:
+
+            if self.pause_frame:
+                self.pause_frame.destroy()
+
+            props = WindowProperties()
+            props.setCursorHidden(True)
+            props.setMouseMode(WindowProperties.M_relative)
+            self.win.requestProperties(props)
+
+            center_x = self.win.getXSize() // 2
+            center_y = self.win.getYSize() // 2
+            self.win.movePointer(0, center_x, center_y)
 
 
     def has_line_of_sight(self, start, end):
@@ -119,6 +166,10 @@ class TacticalFPS(ShowBase):
         self.player_hp =100
         self.player_armor =100
         self.enemy_shot_timer = 0
+        self.paused = False
+        self.pause_frame = None
+
+        self.accept("p", self.toggle_pause)
 
         ShowBase.__init__(self)
 
@@ -806,6 +857,8 @@ class TacticalFPS(ShowBase):
 
 
     def update(self, task):
+        if self.paused:
+         return task.cont
 
         self.skybox.setPos((self.camera.getX()-500,self.camera.getY()-500,-5))
 
