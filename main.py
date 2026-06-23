@@ -825,6 +825,9 @@ class TacticalFPS(ShowBase):
             body.reparentTo(enemy)
             body.setScale(1, 1, 1.5)
             body.setColor(1, 0, 0, 1)
+            enemy_model = loader.loadModel("enemy_detailed.obj")
+            enemy_model.reparentTo(enemy)
+            enemy_model.setScale(1)
 
             head = self.loader.loadModel("models/box")
             head.reparentTo(enemy)
