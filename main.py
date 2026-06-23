@@ -117,6 +117,7 @@ class TacticalFPS(ShowBase):
         self.jump_force = 10
         self.on_ground = True
         self.player_hp =100
+        self.player_armor =100
         self.enemy_shot_timer = 0
 
         ShowBase.__init__(self)
@@ -410,6 +411,25 @@ class TacticalFPS(ShowBase):
         self.bullet_pass_walls.append(b7_wall)
         self.bullet_pass_walls.append(b6_wall)
 
+        end1 = self.loader.loadModel("models/box")
+        end1.reparentTo(render)
+        end1.setScale(10,0.2,6)
+        end1.setPos(50,190,0)
+        self.walls.append(end1)
+        end1.hide()
+        end2 = self.loader.loadModel("models/box")
+        end2.reparentTo(render)
+        end2.setScale(10,0.2,6)
+        end2.setPos(50,200,0)
+        self.walls.append(end2)
+        end2.hide()
+        end3 = self.loader.loadModel("models/box")
+        end3.reparentTo(render)
+        end3.setScale(0.2,10,6)
+        end3.setPos(60,190,0)
+        self.walls.append(end3)
+        end3.hide()
+
         self.skybox = self.loader.loadModel("models/box")
         self.skybox.reparentTo(render)
         self.skybox.setScale(1000)
@@ -481,6 +501,23 @@ class TacticalFPS(ShowBase):
 
 
         import random
+        self.medkits = []
+        medkit_positions = [
+            (5, 80, 1),
+            (-45, 160, 1),
+            (-5, 185, 1)
+        ]
+
+        for pos in medkit_positions:
+
+            medkit = self.loader.loadModel("models/box")
+            medkit.reparentTo(render)
+            medkit.setPos(*pos)
+
+            medkit.setScale(0.5)
+            medkit.setColor(0, 1, 0, 1)
+
+            self.medkits.append(medkit)
 
         self.enemies = []
 
@@ -549,6 +586,45 @@ class TacticalFPS(ShowBase):
                 "velocity_z": 0,
                 "jump_timer": random.uniform(0.5, 1.5),
             })
+        boss = render.attachNewNode("boss")
+        boss.setPos(55, 195, 1)
+        boss_body = self.loader.loadModel("models/box")
+        boss_body.reparentTo(boss)
+        boss_body.setScale(3, 3, 4)
+        boss_body.setColor(0.5, 0, 0, 1)
+        boss_head = self.loader.loadModel("models/box")
+        boss_head.reparentTo(boss)
+        boss_head.setScale(1.5)
+        boss_head.setPos(0, 0, 4.5)
+        boss_head.setColor(1, 0, 0, 1)
+        boss_hp_node = boss.attachNewNode("boss_hp")
+
+        from panda3d.core import BillboardEffect
+        boss_hp_node.setEffect(
+            BillboardEffect.makePointEye()
+        )
+
+        boss_hp_node.setPos(0, 0, 6)
+
+        boss_hp_fill = self.loader.loadModel("models/box")
+        boss_hp_fill.reparentTo(boss_hp_node)
+        boss_hp_fill.setScale(3, 0.08, 0.15)
+        boss_hp_fill.setColor(0, 1, 0, 1)
+        self.enemies.append({
+            "node": boss,
+            "body": boss_body,
+            "head": boss_head,
+            "hp_fill": boss_hp_fill,
+            "hp": 1000,
+            "max_hp": 1000,
+            "velocity_z": 0,
+            "jump_timer": 1,
+            "is_boss": True
+        })
+        boss_body.setScale(4, 4, 6)
+        boss_head.setScale(2)
+        boss_head.setPos(0, 0, 6.5)
+
 
         #self.finish = finish
 
@@ -588,6 +664,16 @@ class TacticalFPS(ShowBase):
             range=100,
             pos=(-1.15, 0, -0.9),   # bas gauche
             scale=(0.4, 1, 0.5)
+        )
+
+
+        self.armor_bar = DirectWaitBar(
+            text="Armure",
+            value=100,
+            range=100,
+            pos=(-1.15, 0, -0.8),
+            scale=(0.4, 1, 0.5),
+            barColor=(0, 0.5, 1, 1)
         )
 
     def handle_shoot(self):
@@ -642,6 +728,8 @@ class TacticalFPS(ShowBase):
         best_dot = 0
 
         for enemy in self.enemies:
+            if enemy["node"].isEmpty():
+                continue
 
             enemy_pos = enemy["node"].getPos()
 
@@ -674,7 +762,7 @@ class TacticalFPS(ShowBase):
 
         distance = (enemy_pos - origin).length()
 
-# précision variable selon la distance
+    # précision variable selon la distance
         body_threshold = min(0.995, 0.97 + distance * 0.0002)
         head_threshold = min(0.9999, 0.995 + distance * 0.00005)
 
@@ -696,20 +784,25 @@ class TacticalFPS(ShowBase):
 
                     best_enemy["hp"] -= 40
                     self.show_message("Touché !", 0.8)
-
                 if best_enemy["hp"] <= 0:
 
                     best_enemy["node"].removeNode()
-                    self.enemies.remove(best_enemy)
 
-                    self.player.score += 100
-                    self.show_message("ENNEMI TUÉ +100", 1.5)
-                    self.kill_sounds[self.kill_index].play()
+
+                    if best_enemy.get("is_boss"):
+                        self.player.score += 1000
+                        self.show_message("BOSS ELIMINE +1000", 3)
+                        self.kill_sounds[self.kill_index].play
+                    else:
+                        self.player.score += 100
+                        self.show_message("ENNEMI TUÉ +100", 1.5)
+                        self.kill_sounds[self.kill_index].play
+
 
                     self.kill_index += 1
 
                     if self.kill_index >= len(self.kill_sounds):
-                        self.kill_index = 0
+                            self.kill_index = 0
 
 
     def update(self, task):
@@ -721,6 +814,8 @@ class TacticalFPS(ShowBase):
         )
 
         self.hp_bar["value"] = self.player_hp
+        self.armor_bar["value"] = self.player_armor
+        self.armor_bar["text"] = f"{self.player_armor} ARMURE"
         self.hp_bar["text"] = f"{self.player_hp} HP"
         if self.player_hp > 60:
             self.hp_bar["barColor"] = (0, 1, 0, 1)      # vert
@@ -730,6 +825,14 @@ class TacticalFPS(ShowBase):
 
         else:
             self.hp_bar["barColor"] = (1, 0, 0, 1)      # rouge
+        if self.player_armor > 60:
+            self.armor_bar["barColor"] = (0, 0.5, 1, 1)
+
+        elif self.player_armor > 30:
+            self.armor_bar["barColor"] = (0.3, 0.3, 1, 1)
+
+        else:
+            self.armor_bar["barColor"] = (0.8, 0.8, 0.8, 1)
         if self.mouse_locked and self.mouseWatcherNode.hasMouse():
 
             mouse = self.win.getPointer(0)
@@ -863,7 +966,7 @@ class TacticalFPS(ShowBase):
 
         self.camera.setZ(new_z)
         self.playerc.setPos(camera.getX()-1,camera.getY()-1,11)
-#
+    #
         # IA ennemi simple
         import random
 
@@ -889,6 +992,8 @@ class TacticalFPS(ShowBase):
                 enemy["hp_fill"].setColor(1, 0, 0, 1)
 
             node = enemy["node"]
+            if node.isEmpty():
+                continue
 
             enemy_pos = node.getPos()
             player_pos = self.camera.getPos()
@@ -898,7 +1003,7 @@ class TacticalFPS(ShowBase):
 
             distance = direction.length()
 
-# L'ennemi ne s'active qu'à moins de 60 mètres
+    # L'ennemi ne s'active qu'à moins de 60 mètres
             if distance <= 100:
 
     # Il s'arrête à 10 mètres du joueur
@@ -945,13 +1050,16 @@ class TacticalFPS(ShowBase):
             self.enemy_shot_timer -= dt
             if len(self.enemies) == 0:
                 return task.cont
+            if node.isEmpty():
+                continue
             distance = (
                 node.getPos() -
                 self.camera.getPos()
             ).length()
 
 
-
+            if node.isEmpty():
+                continue
             if distance <= 25 and self.has_line_of_sight(node.getPos(),self.camera.getPos()):
 
                 if self.enemy_shot_timer <= 0:
@@ -960,6 +1068,8 @@ class TacticalFPS(ShowBase):
                     import math
 
                     # Direction réelle vers le joueur
+                    if node.isEmpty():
+                        continue
                     shoot_dir = self.camera.getPos() - node.getPos()
                     shoot_dir.setZ(0)
                     shoot_dir.normalize()
@@ -992,7 +1102,22 @@ class TacticalFPS(ShowBase):
                     # Le joueur est touché seulement si le tir passe assez près
                     if dot > 0.98:
 
-                        self.player_hp -= 5
+                        damage = 5
+
+                        if self.player_armor > 0:
+
+                            armor_damage = damage * 0.7
+                            health_damage = damage * 0.3
+
+                            self.player_armor = max(
+                                0,
+                                self.player_armor - armor_damage
+                            )
+
+                            self.player_hp -= health_damage
+
+                        else:
+                            self.player_hp -= damage
 
                         self.show_message(
                             f"-10 HP ({self.player_hp})",
@@ -1015,6 +1140,30 @@ class TacticalFPS(ShowBase):
          100
         )
         self.minimap_cam.setH(0)
+        for medkit in self.medkits[:]:
+
+            distance = (
+                medkit.getPos() -
+                self.camera.getPos()
+            ).length()
+            medkit.setH(
+                medkit.getH() + 100 * dt
+            )
+
+            if distance < 2:
+
+                self.player_hp = min(
+                    100,
+                    self.player_hp + 30
+                )
+
+                self.show_message(
+                    "+30 HP",
+                    1
+                )
+
+                medkit.removeNode()
+                self.medkits.remove(medkit)
 
 
         return task.cont
