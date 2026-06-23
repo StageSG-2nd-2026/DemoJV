@@ -3,7 +3,7 @@ from panda3d.core import WindowProperties
 from entities import Player, Enemy
 from managers import ScoreManager, EnemySpawner
 import sys
-
+import webbrowser
 
 class TacticalFPS(ShowBase):
     def start_game(self):
@@ -65,6 +65,13 @@ class TacticalFPS(ShowBase):
             pos=(0, 0, -0.15),
             parent=self.start_frame,
             command=self.start_game
+        )
+        DirectButton(
+            text="???",
+            scale=0.08,
+            pos=(0, 0, -0.60),
+            parent=self.start_frame,
+            command=self.open_youtube
         )
 
         self.best_score_text = OnscreenText(
@@ -385,6 +392,8 @@ class TacticalFPS(ShowBase):
 
     def set_key(self, key, value):
         self.keys[key] = value
+    def open_youtube(self):
+        webbrowser.open("https://youtu.be/dQw4w9WgXcQ?si=kXAHIlXrw_UiIjVi")
     def apply_settings(self):
 
         self.mouse_sensitivity = self.sens_slider["value"]
