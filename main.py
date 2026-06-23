@@ -58,6 +58,13 @@ class TacticalFPS(ShowBase):
             pos=(0, 0.1),
             scale=0.05
         )
+        DirectButton(
+            text="GitHub",
+            scale=0.08,
+            pos=(0, 0, -0.7),
+            parent=self.start_frame,
+            command=lambda: webbrowser.open("https://github.com/StageSG-2nd-2026/DemoJV")
+        )
 
         DirectButton(
             text="JOUER",
