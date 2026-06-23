@@ -484,6 +484,10 @@ class TacticalFPS(ShowBase):
         interieur.reparentTo(render)
         interieur.setScale(30, 40, 0.2)
         interieur.setPos(-40, 150, 0)
+        sbs = self.loader.loadModel("models/box")
+        sbs.reparentTo(render)
+        sbs.setScale(50,50,0.2)
+        sbs.setPos(50,170,0)
 
 
     # Toit
@@ -515,6 +519,10 @@ class TacticalFPS(ShowBase):
         interieurt.reparentTo(render)
         interieurt.setScale(30, 40, 0.2)
         interieurt.setPos(-40, 150, 6)
+        sbt = self.loader.loadModel("models/box")
+        sbt.reparentTo(render)
+        sbt.setScale(50,50,0.2)
+        sbt.setPos(50,170,10)
 
     # Mur gauche
         left_wall = self.loader.loadModel("models/box")
@@ -743,6 +751,7 @@ class TacticalFPS(ShowBase):
         floor5.setTexture(texsol, 1)
         floor6.setTexture(texsol, 1)
         interieur.setTexture(texsol, 1)
+        sbs.setTexture(texsol,1)
 
 
         textoit = self.loader.loadTexture("texture_toit.png")
@@ -755,6 +764,7 @@ class TacticalFPS(ShowBase):
         toit5.setTexture(textoit2,1)
         toit6.setTexture(textoit,1)
         interieurt.setTexture(textoit,1)
+        sbt.setTexture(textoit,1)
 
         endtex = self.loader.loadTexture("end.png")
         end.setTexture(endtex,1)
@@ -847,7 +857,7 @@ class TacticalFPS(ShowBase):
                 "jump_timer": random.uniform(0.5, 1.5),
             })
         boss = render.attachNewNode("boss")
-        boss.setPos(55, 195, 1)
+        boss.setPos(75, 195, 1)
         boss_body = self.loader.loadModel("models/box")
         boss_body.reparentTo(boss)
         boss_body.setScale(3, 3, 4)
