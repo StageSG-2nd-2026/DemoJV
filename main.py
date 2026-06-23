@@ -6,6 +6,68 @@ import sys
 
 
 class TacticalFPS(ShowBase):
+    def start_game(self):
+
+        self.game_started = True
+
+        self.start_frame.destroy()
+
+        props = WindowProperties()
+        props.setCursorHidden(True)
+        props.setMouseMode(WindowProperties.M_relative)
+
+        self.win.requestProperties(props)
+
+        center_x = self.win.getXSize() // 2
+        center_y = self.win.getYSize() // 2
+
+        self.win.movePointer(
+            0,
+            center_x,
+            center_y
+        )
+
+    def show_start_screen(self):
+
+        from direct.gui.DirectGui import DirectFrame, DirectButton
+        from direct.gui.OnscreenText import OnscreenText
+
+        self.start_frame = DirectFrame(
+            frameColor=(0, 0, 0, 1),
+            frameSize=(-2, 2, -2, 2)
+        )
+
+        OnscreenText(
+            text="TACTICAL FPS",
+            parent=self.start_frame,
+            pos=(0, 0.3),
+            scale=0.15,
+            fg=(1, 1, 1, 1)
+        )
+
+        OnscreenText(
+            text="Eliminez tous les ennemis puis atteignez la sortie",
+            parent=self.start_frame,
+            pos=(0, 0.1),
+            scale=0.05
+        )
+
+        DirectButton(
+            text="JOUER",
+            scale=0.08,
+            pos=(0, 0, -0.15),
+            parent=self.start_frame,
+            command=self.start_game
+        )
+
+        DirectButton(
+            text="QUITTER",
+            scale=0.08,
+            pos=(0, 0, -0.3),
+            parent=self.start_frame,
+            command=sys.exit
+        )
+
     def toggle_pause(self):
 
         self.paused = not self.paused
@@ -146,6 +208,7 @@ class TacticalFPS(ShowBase):
         return False
 
     def __init__(self):
+        self.game_started = False
         self.mouse_sensitivity = 0.15
         self.accept("p", self.increase_sensitivity)
         self.accept("m", self.decrease_sensitivity)
@@ -228,6 +291,7 @@ class TacticalFPS(ShowBase):
 
         # HUD
         self.setup_ui()
+        self.show_start_screen()
 
         # Events
         self.accept("mouse1", self.start_shooting)
@@ -857,6 +921,8 @@ class TacticalFPS(ShowBase):
 
 
     def update(self, task):
+        if not self.game_started:
+            return task.cont
         if self.paused:
          return task.cont
 
