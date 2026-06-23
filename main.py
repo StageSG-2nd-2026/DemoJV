@@ -99,15 +99,23 @@ class TacticalFPS(ShowBase):
             DirectButton(
                 text="Reprendre",
                 scale=0.08,
-                pos=(0, 0, 0.1),
+                pos=(0, 0, 0.2),
                 parent=self.pause_frame,
                 command=self.toggle_pause
             )
 
             DirectButton(
+                text="Parametres",
+                scale=0.08,
+                pos=(0, 0, 0),
+                parent=self.pause_frame,
+                command=self.show_pause_settings
+            )
+
+            DirectButton(
                 text="Quitter",
                 scale=0.08,
-                pos=(0, 0, -0.1),
+                pos=(0, 0, -0.2),
                 parent=self.pause_frame,
                 command=sys.exit
             )
@@ -130,6 +138,51 @@ class TacticalFPS(ShowBase):
             center_x = self.win.getXSize() // 2
             center_y = self.win.getYSize() // 2
             self.win.movePointer(0, center_x, center_y)
+    def apply_pause_settings(self):
+
+        self.mouse_sensitivity = self.pause_sens_slider["value"]
+
+        self.show_message(
+            f"Sensibilite : {self.mouse_sensitivity:.2f}",
+            1
+        )
+
+        self.pause_settings_frame.destroy()
+
+    def show_pause_settings(self):
+
+        from direct.gui.DirectGui import DirectFrame
+        from direct.gui.DirectGui import DirectButton
+        from direct.gui.DirectGui import DirectSlider
+        from direct.gui.OnscreenText import OnscreenText
+
+        self.pause_settings_frame = DirectFrame(
+            frameColor=(0,0,0,0.9),
+            frameSize=(-0.8,0.8,-0.6,0.6)
+        )
+
+        OnscreenText(
+            text="Sensibilite souris",
+            parent=self.pause_settings_frame,
+            pos=(0,0.25),
+            scale=0.07
+        )
+
+        self.pause_sens_slider = DirectSlider(
+            parent=self.pause_settings_frame,
+            range=(0.05,0.5),
+            value=self.mouse_sensitivity,
+            scale=0.5,
+            pos=(0,0,0)
+        )
+
+        DirectButton(
+            text="Valider",
+            parent=self.pause_settings_frame,
+            scale=0.06,
+            pos=(0,0,-0.25),
+            command=self.apply_pause_settings
+        )
 
 
     def has_line_of_sight(self, start, end):
