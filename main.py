@@ -508,6 +508,12 @@ class TacticalFPS(ShowBase):
             head.setScale(0.6)
             head.setPos(0, 0, 1.8)
             head.setColor(1, 0.8, 0.8, 1)
+            # Cube rouge au-dessus de l'ennemi
+            marker = self.loader.loadModel("models/box")
+            marker.reparentTo(enemy)
+            marker.setScale(2)
+            marker.setPos(0, 0, 11)
+            marker.setColor(1, 0, 0, 1)
 
             # ======================
             # Barre de vie
