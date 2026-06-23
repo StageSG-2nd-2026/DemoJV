@@ -60,6 +60,13 @@ class TacticalFPS(ShowBase):
             command=self.start_game
         )
 
+        self.best_score_text = OnscreenText(
+            text=f"Meilleur score : {self.best_score}",
+            pos=(0, -0.2),
+            scale=0.07,
+            fg=(1, 1, 0, 1)
+        )
+
         DirectButton(
             text="QUITTER",
             scale=0.08,
@@ -67,6 +74,7 @@ class TacticalFPS(ShowBase):
             parent=self.start_frame,
             command=sys.exit
         )
+        self.start_frame["image"] = "end.png"
 
     def toggle_pause(self):
 
@@ -235,6 +243,11 @@ class TacticalFPS(ShowBase):
         self.accept("p", self.toggle_pause)
 
         ShowBase.__init__(self)
+        try:
+            with open("best_score.txt", "r") as f:
+                self.best_score = int(f.read())
+        except:
+            self.best_score = 0
 
         from panda3d.core import DisplayRegion
 
@@ -923,6 +936,8 @@ class TacticalFPS(ShowBase):
     def update(self, task):
         if not self.game_started:
             return task.cont
+        else:
+            self.best_score_text.destroy()
         if self.paused:
          return task.cont
 
@@ -1074,6 +1089,9 @@ class TacticalFPS(ShowBase):
             total_time = self.score_manager.get_elapsed_time()
             final_score = self.score_manager.calculate_final_score(self.player, total_time)
             rank = self.score_manager.get_rank(final_score)
+            if final_score > self.best_score:
+                with open("best_score.txt", "w") as f:
+                    f.write(str(final_score))
             print(f"Game Over! Score: {final_score}, Rank: {rank}")
             OnscreenText(text="GAME OVER",pos=(0,0),scale=0.2,fg=(1,0,0,1),align=TextNode.ACenter)
             self.taskMgr.doMethodLater(
@@ -1303,6 +1321,11 @@ class TacticalFPS(ShowBase):
             self.player,
             total_time
         )
+        if final_score > self.best_score:
+            self.best_score = final_score
+
+            with open("best_score.txt", "w") as f:
+                f.write(str(final_score))
         print(total_time)
 
         rank = self.score_manager.get_rank(final_score)
