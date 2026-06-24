@@ -1011,6 +1011,55 @@ class TacticalFPS(ShowBase):
         # Détection de touche
         origin = self.camera.getPos()
         forward = self.camera.getQuat().getForward()
+        closest_wall = None
+        closest_distance = 999999
+        impact_pos = None
+
+        for wall in self.walls:
+
+            bounds = wall.getTightBounds()
+
+            if bounds is None:
+                continue
+
+            min_p, max_p = bounds
+
+            for dist in range(1, 100):
+
+                test_pos = origin + forward * dist
+
+                if (
+                    min_p.x <= test_pos.x <= max_p.x
+                    and
+                    min_p.y <= test_pos.y <= max_p.y
+                    and
+                    min_p.z <= test_pos.z <= max_p.z
+                ):
+
+                    if dist < closest_distance:
+                        closest_distance = dist
+                        closest_wall = wall
+                        impact_pos = test_pos
+
+                    break
+        if impact_pos:
+
+            impact = self.loader.loadModel("models/box")
+            impact.reparentTo(render)
+
+            impact.setScale(0.08)
+            impact.setPos(impact_pos)
+
+            impact.setColor(0.1, 0.1, 0.1, 1)
+
+            self.taskMgr.doMethodLater(
+                15,
+                lambda task, n=impact: (
+                    n.removeNode(),
+                    task.done
+                )[1],
+                f"impact_{id(impact)}"
+            )
 
         best_enemy = None
         best_hit = None
