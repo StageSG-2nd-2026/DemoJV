@@ -290,6 +290,9 @@ class TacticalFPS(ShowBase):
         return False
 
     def __init__(self):
+        self.kill_combo = 0
+        self.combo_timer = 0
+        self.score_multiplier = 1
         self.game_started = False
         self.mouse_sensitivity = 0.15
         self.accept("p", self.increase_sensitivity)
@@ -825,9 +828,9 @@ class TacticalFPS(ShowBase):
             body.reparentTo(enemy)
             body.setScale(1, 1, 1.5)
             body.setColor(1, 0, 0, 1)
-            enemy_model = loader.loadModel("enemy_detailed.obj")
-            enemy_model.reparentTo(enemy)
-            enemy_model.setScale(1)
+##            enemy_model = loader.loadModel("enemy_detailed.obj")
+##            enemy_model.reparentTo(enemy)
+##            enemy_model.setScale(1)
 
             head = self.loader.loadModel("models/box")
             head.reparentTo(enemy)
@@ -910,15 +913,20 @@ class TacticalFPS(ShowBase):
             "jump_timer": 1,
             "is_boss": True
         })
-        boss_body.setScale(4, 4, 6)
-        boss_head.setScale(2)
-        boss_head.setPos(0, 0, 6.5)
+
 
 
         #self.finish = finish
 
     def setup_ui(self):
         from direct.gui.OnscreenText import OnscreenText
+        self.combo_text = OnscreenText(
+            text="",
+            pos=(0, 0.8),
+            scale=0.07,
+            fg=(1, 1, 0, 1),
+            mayChange=True
+        )
 
         self.crosshair = OnscreenText(
             text="+",
@@ -1072,7 +1080,10 @@ class TacticalFPS(ShowBase):
             enemy_pos = enemy["node"].getPos()
 
             body_pos = enemy_pos
-            head_pos = enemy_pos + (0, 0, 1.8)
+            if enemy.get("is_boss"):
+                head_pos = enemy_pos + (0, 0, 6.5)
+            else:
+                head_pos = enemy_pos + (0, 0, 1.8)
 
             body_dir = body_pos - origin
             head_dir = head_pos - origin
@@ -1101,8 +1112,12 @@ class TacticalFPS(ShowBase):
         distance = (enemy_pos - origin).length()
 
     # précision variable selon la distance
-        body_threshold = min(0.995, 0.97 + distance * 0.0002)
-        head_threshold = min(0.9999, 0.995 + distance * 0.00005)
+        if best_enemy.get("is_boss"):
+            body_threshold = 0.90
+            head_threshold = 0.95
+        else:
+            body_threshold = min(0.995, 0.97 + distance * 0.0002)
+            head_threshold = min(0.9999, 0.995 + distance * 0.00005)
 
         if best_enemy:
 
@@ -1127,14 +1142,37 @@ class TacticalFPS(ShowBase):
                     best_enemy["node"].removeNode()
 
 
-                    if best_enemy.get("is_boss"):
-                        self.player.score += 1000
-                        self.show_message("BOSS ELIMINE +1000", 3)
-                        self.kill_sounds[self.kill_index].play
+                    self.kill_combo += 1
+                    if self.kill_combo == 2:
+                        self.show_message("DOUBLE KILL x2", 1)
+
+                    elif self.kill_combo == 3:
+                        self.show_message("TRIPLE KILL x3", 1)
+
+                    elif self.kill_combo == 4:
+                        self.show_message("MEGA KILL x4", 1)
+
+                    elif self.kill_combo >= 5:
+                        self.show_message("MONSTER KILL x5", 1.5)
+                    self.combo_timer = 3
+
+                    if self.kill_combo >= 5:
+                        self.score_multiplier = 5
+                    elif self.kill_combo >= 4:
+                        self.score_multiplier = 4
+                    elif self.kill_combo >= 3:
+                        self.score_multiplier = 3
+                    elif self.kill_combo >= 2:
+                        self.score_multiplier = 2
                     else:
-                        self.player.score += 100
-                        self.show_message("ENNEMI TUÉ +100", 1.5)
-                        self.kill_sounds[self.kill_index].play
+                        self.score_multiplier = 1
+
+                    if best_enemy.get("is_boss"):
+                        gained_score = 1000 * self.score_multiplier
+                    else:
+                        gained_score = 100 * self.score_multiplier
+
+                    self.player.score += gained_score
 
 
                     self.kill_index += 1
@@ -1207,6 +1245,12 @@ class TacticalFPS(ShowBase):
 
 
         dt = globalClock.getDt()
+        if self.combo_timer > 0:
+            self.combo_timer -= dt
+
+            if self.combo_timer <= 0:
+                self.kill_combo = 0
+                self.score_multiplier = 1
         self.fire_timer -= dt
 
         if self.shooting and self.fire_timer <= 0:
@@ -1512,6 +1556,12 @@ class TacticalFPS(ShowBase):
 
                 medkit.removeNode()
                 self.medkits.remove(medkit)
+        if self.score_multiplier > 1:
+            self.combo_text.setText(
+                f"COMBO x{self.score_multiplier}"
+            )
+        else:
+            self.combo_text.setText("")
 
 
         return task.cont
